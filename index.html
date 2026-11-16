@@ -26,7 +26,7 @@ button.pri{background:var(--ch);color:#1a1a1a;border-color:var(--ch);font-weight
 .sg b{font-weight:400;white-space:pre}
 .song h3{display:inline-block;margin:1.2em 0 .3em;padding:.2em .7em;border-radius:99px;font:700 .7em system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase;background:#2c4356;color:var(--ac)}
 .song h3.c{background:#4a3a1a;color:var(--ch)}.song h3.b{background:#1d4a45;color:#7fe0d1}.song h3.p{background:#3a2f55;color:#c4b2ff}
-.gap{height:.9em}.tags button{padding:8px 12px}
+.gap{height:.9em}.lb{display:block;margin:8px 0 4px;font-weight:600}.lb small{color:var(--mt);font-weight:400;margin-left:8px}
 .mt{color:var(--mt)}
 nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--sf);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
 nav button{flex:1;border:0;border-radius:0;background:none;padding:16px;color:var(--mt)}
@@ -106,10 +106,10 @@ function lst(){const t=q.toLowerCase();
   `<p class="mt">${songs.length?'No hay cantos con esa búsqueda.':'Aún no hay cantos. Entra en Cuenta, inicia sesión y toca Sincronizar.'}</p>`}
 const vSongs=()=>`<input id="q" type="search" placeholder="Buscar canto, autor o tono" value="${esc(q)}" oninput="q=this.value;$('#lst').innerHTML=lst()">${lead()?'<button class="pri" onclick="edit()">Nuevo canto</button>':''}<div id="lst">${lst()}</div>`;
 function vSong(){const s=songs.find(x=>x.id==curId);if(!s){view='songs';return vSongs()}
-  const n=tr[s.id]||0,inn=setl.ids.includes(s.id),sc=secs(s.body),vm=mode=='verse';vi=Math.max(0,Math.min(vi,sc.length-1));
+  const n=tr[s.id]||0,inn=setl.ids.includes(s.id),b=exp(s.body),sc=secs(b),vm=mode=='verse';vi=Math.max(0,Math.min(vi,sc.length-1));
   const bar=`<div class="bar"><button onclick="go('songs')">Volver</button><button onclick="tp(-1)">−1</button><span>${esc(tc(s.key,n))}</span><button onclick="tp(1)">+1</button><button onclick="fz(-2)">A−</button><button onclick="fz(2)">A+</button><button onclick="document.body.classList.toggle('stage')">Escenario</button><button onclick="sm()">${vm?'Completo':'Estrofas'}</button></div>`;
   const ed=lead()?`<div class="bar"><button onclick="tog('${s.id}')">${inn?'Quitar del setlist':'Agregar al setlist'}</button><button onclick="edit('${s.id}')">Editar</button></div>`:'';
-  if(!vm)return bar+`<div class="song" style="font-size:${fs}px">${lyr(s,n)}</div>`+ed;
+  if(!vm)return bar+`<div class="song" style="font-size:${fs}px">${lyr(b,n)}</div>`+ed;
   const nm=(x,i)=>x.startsWith('#')?x.split('\n')[0].slice(1).trim()||'Parte '+(i+1):'Parte '+(i+1);
   return bar+`<div class="bar chips">${sc.map((x,i)=>`<button class="${i==vi?'on':''}" onclick="vj(${i})">${esc(nm(x,i))}</button>`).join('')}</div><div class="song sec" style="font-size:${fs+6}px">${lyr({body:sc[vi]},n)}</div>${ed}<div class="pn"><button onclick="vs(-1)">◀ Anterior</button><span>${vi+1}/${sc.length}</span><button class="pri" onclick="vs(1)">Siguiente ▶</button></div>`}
 function vSet(){const L=lead(),a=setl.ids.map(i=>songs.find(s=>s.id==i)).filter(Boolean);
@@ -119,8 +119,13 @@ function vSet(){const L=lead(),a=setl.ids.map(i=>songs.find(s=>s.id==i)).filter(
   (L?'<p></p><button class="pri" onclick="saveSet()">Guardar setlist</button>':'')}
 const vAcct=()=>auth?`<p>${esc(auth.user?.email||'')}<br><span class="mt">Rol: ${lead()?'líder':'miembro'}</span></p><button class="pri" onclick="sync()">Sincronizar ahora</button> <button onclick="out()">Cerrar sesión</button><p class="mt">Última sincronización: ${esc(ls('last','nunca'))}</p>`:
   `<input id="em" type="email" placeholder="Correo" autocomplete="username"><input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password"><button class="pri" onclick="doLogin()">Entrar</button>`;
-function vEdit(){const s=songs.find(x=>x.id==editId)||{title:'',author:'',key:'C',body:''};
-  return`<input id="et" placeholder="Título" value="${esc(s.title)}"><input id="ea" placeholder="Autor" value="${esc(s.author||'')}"><input id="ek" placeholder="Tono (ej. G)" value="${esc(s.key)}"><p class="mt">Toca un botón para marcar una parte donde tengas el cursor:</p><div class="bar tags">${['Intro','Verso','Pre-coro','Coro','Puente','Instrumental','Final'].map(t=>`<button type="button" onclick="ins('${t}')">${t}</button>`).join('')}</div><textarea id="eb" rows="16" placeholder="# Estrofa 1&#10;[G]Letra con [C]acordes">${esc(s.body)}</textarea><p class="mt">Escribe el acorde entre corchetes justo antes de la sílaba. Cada parte empieza con una línea como # Coro. Puedes cambiar el nombre a mano, por ejemplo # Verso 2.</p><div class="bar"><button class="pri" onclick="saveS()">Guardar canto</button>${s.id?'<button onclick="delS()">Eliminar</button>':''}<button onclick="go(\'songs\')">Cancelar</button></div>`}
+function vEdit(){const s=songs.find(x=>x.id==editId)||{title:'',author:'',key:'C',body:''},{B,ord}=s.body?parts(s.body):{B:emptyB(),ord:''};
+  const hint={intro:'opcional',estrofa:'varias estrofas: sepáralas con una línea en blanco',pre:'opcional',coro:'',puente:'opcional'},rows={intro:4,estrofa:9,pre:4,coro:6,puente:4};
+  return`<input id="et" placeholder="Título" value="${esc(s.title)}"><input id="ea" placeholder="Autor" value="${esc(s.author||'')}"><input id="ek" placeholder="Tono (ej. G)" value="${esc(s.key)}">`+
+  TY.map(([t,n])=>`<label class="lb">${n}<small>${hint[t]}</small></label><textarea id="b-${t}" rows="${rows[t]}" placeholder="[G]Letra con [C]acordes">${esc(B[t].join('\n\n'))}</textarea>`).join('')+
+  `<label class="lb">Orden del canto<small>cómo se canta de principio a fin</small></label><input id="eo" placeholder="Intro, Estrofa, Pre-coro, Coro" value="${esc(ord)}"><button type="button" onclick="sugg()">Orden sugerido</button>
+<p class="mt">Escribe cada parte una sola vez, con el acorde entre corchetes antes de la sílaba. En el orden repite las partes las veces que se canten, por ejemplo: Intro, Estrofa 1, Coro, Estrofa 2, Coro, Puente, Coro.</p>
+<div class="bar"><button class="pri" onclick="saveS()">Guardar canto</button>${s.id?'<button onclick="delS()">Eliminar</button>':''}<button onclick="go('songs')">Cancelar</button></div>`}
 
 function render(){
   const V={songs:vSongs,song:vSong,set:vSet,acct:vAcct,edit:vEdit};$('#app').innerHTML=V[view]();
@@ -135,15 +140,44 @@ function secs(b){const L=b.split('\n'),h=L.some(l=>l.startsWith('#')),o=[];let c
   for(const l of L){if(h){if(l.startsWith('#'))f();c.push(l)}else{if(!l.trim())f();else c.push(l)}}f();return o.length?o:[b]}
 function sm(){mode=mode=='verse'?'full':'verse';vi=0;sv('mode',mode);render()}
 function vj(i){vi=i;render();scrollTo(0,0)}
-function vs(d){const s=songs.find(x=>x.id==curId);if(!s)return;vi=Math.max(0,Math.min(secs(s.body).length-1,vi+d));render();scrollTo(0,0)}
+function vs(d){const s=songs.find(x=>x.id==curId);if(!s)return;vi=Math.max(0,Math.min(secs(exp(s.body)).length-1,vi+d));render();scrollTo(0,0)}
 let tx=null;
 document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 document.addEventListener('touchend',e=>{if(tx===null||view!='song'||mode!='verse')return;const d=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(d)>70)vs(d<0?1:-1)},{passive:true});
 document.addEventListener('keydown',e=>{if(view=='song'&&mode=='verse'){if(e.key=='ArrowRight')vs(1);if(e.key=='ArrowLeft')vs(-1)}});
-function ins(t){const e=$('#eb'),v=e.value,p=e.selectionStart??v.length;
-  const c=(v.match(new RegExp('^#\\s*'+t+'(\\s|$)','gim'))||[]).length,nm=t=='Verso'?'Verso '+(c+1):(c?t+' '+(c+1):t);
-  const pre=v.slice(0,p),post=v.slice(p),s=(!pre||pre.endsWith('\n\n')?'':pre.endsWith('\n')?'\n':'\n\n')+'# '+nm+'\n';
-  e.value=pre+s+post;e.focus();e.selectionStart=e.selectionEnd=pre.length+s.length}
+/* Partes del canto: cada parte se escribe una vez y el orden las arma */
+const TY=[['intro','Intro'],['estrofa','Estrofa'],['pre','Pre-coro'],['coro','Coro'],['puente','Puente']],lab=t=>TY.find(x=>x[0]==t)[1];
+const nrm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const typ=t=>{t=nrm(t);return /intro/.test(t)?'intro':/pre/.test(t)?'pre':/coro|chorus/.test(t)?'coro':/puente|bridge/.test(t)?'puente':'estrofa'};
+const tok=r=>{const t=nrm(r);return /intro/.test(t)?'intro':/pre/.test(t)?'pre':/coro|chorus/.test(t)?'coro':/puente|bridge/.test(t)?'puente':/estrofa|verso|verse/.test(t)?'estrofa':null};
+const emptyB=()=>({intro:[],estrofa:[],pre:[],coro:[],puente:[]});
+function parts(body){
+  const L=body.split('\n');let ord='';
+  if(/^@orden:/i.test(L[0]||''))ord=L.shift().replace(/^@orden:/i,'').trim();
+  const S=[];let c=null;
+  if(L.some(l=>l.startsWith('#'))){for(const l of L){if(l.startsWith('#')){c={t:l.slice(1).trim(),l:[]};S.push(c)}else if(c)c.l.push(l)}}
+  else{for(const l of L){if(!l.trim()){c=null;continue}if(!c){c={t:'Estrofa',l:[]};S.push(c)}c.l.push(l)}}
+  const B=emptyB(),seq=[],dd=!ord;
+  for(const x of S){const t=typ(x.t),tx=x.l.join('\n').trim();if(!tx)continue;let i=dd?B[t].indexOf(tx):-1;if(i<0){B[t].push(tx);i=B[t].length-1}seq.push([t,i])}
+  if(!ord)ord=seq.map(([t,i])=>lab(t)+(B[t].length>1?' '+(i+1):'')).join(', ');
+  return{B,ord}}
+function sug(B){const o=[],n=B.estrofa.length;if(B.intro.length)o.push('Intro');
+  for(let i=0;i<n;i++){o.push('Estrofa'+(n>1?' '+(i+1):''));if(B.pre.length)o.push('Pre-coro');if(B.coro.length)o.push('Coro')}
+  if(!n){if(B.pre.length)o.push('Pre-coro');if(B.coro.length)o.push('Coro')}
+  if(B.puente.length){o.push('Puente');if(B.coro.length)o.push('Coro')}
+  return o.join(', ')}
+function build(B,ord){const o=['@orden: '+ord];
+  for(const[t]of TY)B[t].forEach((tx,i)=>o.push('','# '+lab(t)+(B[t].length>1?' '+(i+1):''),tx));
+  return o.join('\n')}
+function exp(body){
+  if(!/^@orden:/i.test(body.split('\n')[0]||''))return body;
+  const{B,ord}=parts(body),u={intro:0,estrofa:0,pre:0,coro:0,puente:0},o=[];
+  for(const r of ord.split(',')){const t=tok(r);if(!t||!B[t].length)continue;const m=r.match(/(\d+)\s*$/);
+    let i=m?+m[1]-1:u[t]++;i=Math.max(0,Math.min(i,B[t].length-1));
+    o.push('# '+lab(t)+(B[t].length>1?' '+(i+1):''),B[t][i],'')}
+  return o.join('\n').trim()}
+const getB=()=>{const B=emptyB();for(const[t]of TY)B[t]=($('#b-'+t).value||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);return B};
+const sugg=()=>{$('#eo').value=sug(getB())};
 function fz(d){fs=Math.max(12,Math.min(48,fs+d));sv('fs',fs);render()}
 function chg(){setl.pending=true;sv('setl',setl);render()}
 function tog(id){if(setl.ids.includes(id))setl.ids=setl.ids.filter(x=>x!=id);else setl.ids.push(id);chg()}
@@ -151,7 +185,10 @@ function mv(i,d){const j=i+d,a=setl.ids;if(j<0||j>=a.length)return;[a[i],a[j]]=[
 function rm(i){setl.ids.splice(i,1);chg()}
 async function saveSet(){setl.pending=true;sv('setl',setl);
   try{await refresh();await pushSet();msg('Setlist guardado')}catch{msg('Sin conexión: se enviará al sincronizar')}}
-async function saveS(){const t=$('#et').value.trim(),b=$('#eb').value;if(!t||!b.trim()){msg('Escribe el título y la letra');return}
+async function saveS(){const t=$('#et').value.trim(),B=getB();if(!t||!TY.some(([k])=>B[k].length)){msg('Escribe el título y al menos una parte');return}
+  const ord=$('#eo').value.trim()||sug(B),bad=ord.split(',').map(x=>x.trim()).filter(Boolean).filter(x=>{const k=tok(x);return !k||!B[k].length});
+  if(bad.length){msg('En el orden no se entiende o está vacía la caja: '+bad.join(', '));return}
+  const b=build(B,ord);
   let s=songs.find(x=>x.id==editId);if(!s){s={id:crypto.randomUUID()};songs.push(s)}
   Object.assign(s,{title:t,author:$('#ea').value.trim(),key:$('#ek').value.trim()||'C',body:b,pending:true});sv('songs',songs);
   try{await refresh();await push(s);sv('songs',songs);msg('Canto guardado')}catch{msg('Sin conexión: se enviará al sincronizar')}
