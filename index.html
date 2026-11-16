@@ -1,227 +1,57 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>RAV Praise Team</title>
-<link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
-<meta name="theme-color" content="#17222b">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="RAV Praise Team">
-<style>
-:root{--bg:#17222b;--sf:#223240;--ln:#34495a;--tx:#eef2f4;--mt:#97a9b5;--ch:#ffb347;--ac:#4fc3b0}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,sans-serif;padding:0 0 calc(70px + env(safe-area-inset-bottom))}
-header{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) max(16px,calc((100% - 760px)/2)) 8px}h1{margin:0;font-size:22px}
-header img{display:none;width:46px;height:46px;border-radius:50%;background:#fff;padding:3px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-body[data-v=songs] header,body[data-v=acct] header{background:linear-gradient(120deg,#0b2f73,#1565c8 55%,#2aa5f0);padding-bottom:14px}
-body[data-v=songs] header img,body[data-v=acct] header img{display:block}
-body[data-v=songs] h1,body[data-v=acct] h1{color:#fff}
-body[data-v=songs] input{border-color:#2a6fc0}
-body[data-v=songs] .row{background:rgba(21,101,200,.12);border:1px solid rgba(42,165,240,.25);border-left:4px solid #2aa5f0;border-radius:10px;margin:8px 0;padding:12px}
-.card{background:var(--sf);border:1px solid #2b5da8;border-radius:14px;padding:14px;margin:12px 0}
-.logo{background:#fff;border-radius:16px;padding:14px;text-align:center;margin:12px 0}.logo img{width:70%;max-width:240px}
-.cr{padding:6px 0}.cr input{width:64px;height:42px;padding:2px;margin:0}.pv{flex:1;font-weight:700}
-body[data-v=set]{background:#000}body[data-v=set] nav{background:#000;border-top-color:#222}body[data-v=set] nav button{background:none;border:0}
-body[data-v=set] .row{border-bottom-color:#222}body[data-v=set] button,body[data-v=set] input{background:#0d0d0d;border-color:#2a2a2a}
-body[data-v=set] button.pri{background:var(--ch);border-color:var(--ch)}
-.stage main{padding-top:calc(env(safe-area-inset-top) + 8px)}
-main{padding:8px 16px;max-width:760px;margin:auto}
-input,textarea{width:100%;padding:12px;margin:0 0 10px;border:1px solid var(--ln);border-radius:8px;background:var(--sf);color:var(--tx);font:inherit}
-button{padding:10px 14px;border:1px solid var(--ln);border-radius:8px;background:var(--sf);color:var(--tx);font:inherit}
-button.big{padding:16px 22px;font-size:1.1em}
-button.pri{background:var(--ch);color:#1a1a1a;border-color:var(--ch);font-weight:600;margin-bottom:10px}
-.row{display:flex;gap:10px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--ln)}
-.row b{flex:1}.row span{color:var(--mt)}.row em{font-style:normal;color:var(--ch);font-weight:700}
-.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
-.bar span{color:var(--ch);font-weight:700;min-width:2em;text-align:center}
-.song{font-family:Georgia,serif;line-height:1.25;padding:8px 0}
-.ln{display:flex;flex-wrap:wrap;margin:.15em 0}.sg{display:inline-flex;flex-direction:column}
-.sg i{font:700 .8em system-ui,sans-serif;color:var(--ch);padding-right:.3em;min-height:1.2em}
-.sg b{font-weight:400;white-space:pre}
-.song h3{display:inline-block;margin:1.2em 0 .3em;padding:.2em .7em;border-radius:99px;font:700 .7em system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase;background:#2c4356;color:var(--ac)}
-.song h3.c{background:#4a3a1a;color:var(--ch)}.song h3.b{background:#1d4a45;color:#7fe0d1}.song h3.p{background:#3a2f55;color:#c4b2ff}
-.gap{height:.9em}.lb{display:block;margin:8px 0 4px;font-weight:600}.lb small{color:var(--mt);font-weight:400;margin-left:8px}
-.mt{color:var(--mt)}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--sf);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;border-radius:0;background:none;padding:16px;color:var(--mt)}
-nav button.on{color:var(--ch);font-weight:700}
-.stage{background:#0e151b}.stage header,.stage nav{display:none}
-.chips button.on{border-color:var(--ac);color:var(--ac)}
-.sec{padding-bottom:100px}
-.pn{position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 16px;background:var(--bg);border-top:1px solid var(--ln)}
-.pn button{flex:1;padding:16px;margin:0}.pn span{color:var(--mt)}
-.stage .pn{bottom:env(safe-area-inset-bottom)}
-#toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--tx);color:#111;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%}
-#toast.on{opacity:1}
-</style></head><body>
-<header><img src="logo-r.png" alt=""><h1 id="ttl">Cantos</h1></header>
-<main id="app"></main>
-<nav><button data-v="songs" onclick="go('songs')">Cantos</button><button data-v="set" onclick="go('set')">Setlist</button><button data-v="acct" onclick="go('acct')">Cuenta</button></nav>
-<div id="toast"></div>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101827"><title>RAV Praise Team</title><style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#eaf0f7;background:#0c1220}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}.shell{min-height:100dvh;display:flex}.sidebar{width:235px;background:#101a2a;border-right:1px solid #27364a;padding:25px 15px;display:flex;flex-direction:column;gap:8px}.brand{font-size:21px;font-weight:850;color:#fff;margin:0 8px 25px}.brand span{color:#e9b967}.nav{background:transparent;border:0;color:#aebed2;padding:14px 16px;border-radius:12px;text-align:left}.nav.active,.nav:hover{background:#20364d;color:white}.nav-bottom{margin-top:auto}.main{flex:1;min-width:0;padding:30px;max-width:1300px;margin:auto;width:100%}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px}.top h1{margin:0;font-size:28px}.muted{color:#a3b2c6}.small{font-size:12px}.pill{border:1px solid #35546a;border-radius:30px;padding:6px 12px;color:#a9d8c7;font-size:12px}.panel{background:#152236;border:1px solid #2b3b51;border-radius:17px;padding:20px;margin-bottom:18px}.panel h2{margin:0 0 14px;font-size:19px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.card{background:#1b2b40;border:1px solid #33455b;border-radius:14px;padding:17px}.card h3{margin:0 0 7px}.btn{background:#e9b967;border:0;color:#152033;font-weight:750;border-radius:10px;padding:11px 15px}.btn.secondary{background:#293e54;color:#f1f6fc}.btn.danger{background:#623039;color:#fff}.btn.outline{background:transparent;border:1px solid #587087;color:#eaf0f7}.btn.sm{padding:7px 10px;font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}.field label{font-size:13px;color:#c4d2e2}.field input,.field textarea,.field select,input.search{width:100%;background:#0e1929;border:1px solid #3a4d63;border-radius:10px;color:white;padding:11px;outline-offset:2px}.field textarea{min-height:95px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#e9b967}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.stack{display:flex;flex-direction:column;gap:12px}.listitem{border:1px solid #34495e;border-radius:12px;padding:13px;background:#1b2b40}.listitem.selected{border-color:#e9b967}.tag{font-size:12px;color:#f6d69a}.song-title{font-size:17px;font-weight:750}.empty{padding:25px;color:#aab9c8;text-align:center}.setlist-screen{background:#000;color:#fff;border:1px solid #353535;border-radius:16px;padding:20px;min-height:400px}.section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin:16px 0}.section{background:#101010;border:1px solid #484848;color:#fff;border-radius:10px;text-align:left;padding:13px;min-height:95px;white-space:pre-line}.section.active{border:2px solid #e9b967;background:#25211a}.section .name{font-weight:800;margin-bottom:8px}.section .preview{font-size:12px;color:#eee;line-height:1.4}.stage{background:#000;border:1px solid #333;border-radius:12px;min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:16px}.stage .lyrics{white-space:pre-line;font-size:clamp(23px,3vw,37px);font-weight:650;line-height:1.45}.stage .chords{white-space:pre-wrap;font-size:clamp(16px,2vw,24px);font-weight:750}.stage .sectlabel{font-size:13px;letter-spacing:2px;font-weight:800}.stage.monitor{min-height:65vh}.color-row{display:flex;gap:9px;flex-wrap:wrap}.swatch{width:34px;height:34px;border-radius:50%;border:2px solid #667;cursor:pointer}.swatch.selected{outline:2px solid white;outline-offset:2px}.auth{min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top,#243d5a,#0c1220 65%)}.auth-card{width:min(430px,100%);background:#142239;border:1px solid #324a64;border-radius:22px;padding:30px}.auth-logo{width:75px;height:75px;border-radius:20px;background:linear-gradient(135deg,#264d7b,#101a2a);display:grid;place-items:center;font-size:29px;font-weight:900;color:#e9b967;margin:auto auto 15px}.auth-card h1{text-align:center;margin:0}.auth-card p{text-align:center}.auth-card .btn{width:100%}.notice{padding:12px;background:#24374b;border-radius:10px;font-size:13px}.warning{color:#f2c6b7}.split{display:grid;grid-template-columns:minmax(250px,1fr) minmax(300px,1.5fr);gap:16px}.line{height:1px;background:#304155;margin:14px 0}.topright{display:flex;gap:8px;align-items:center}.mobile-nav{display:none}.chatlog{height:310px;overflow:auto;background:#101b2b;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}.bubble{max-width:82%;background:#263d56;border-radius:12px;padding:10px 13px;align-self:flex-start;overflow-wrap:anywhere}.bubble.mine{align-self:flex-end;background:#2e5268}.bubble b{display:block;font-size:12px;color:#e9b967;margin-bottom:5px}.section-editor{background:#101c2e;border-radius:12px;padding:12px;margin-bottom:10px}.section-editor .row{align-items:flex-start}.section-editor textarea{min-height:75px}.color-input{height:42px!important;padding:3px!important}.inline{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.inline .field{flex:1;min-width:120px}.nowrap{white-space:nowrap}@media(max-width:760px){.sidebar{display:none}.main{padding:17px 14px 85px}.top h1{font-size:22px}.mobile-nav{position:fixed;z-index:20;bottom:0;left:0;right:0;display:flex;background:#111c2d;border-top:1px solid #314359;padding:7px 3px calc(7px + env(safe-area-inset-bottom))}.mobile-nav button{flex:1;background:none;border:0;color:#9fb0c4;font-size:11px;padding:9px 1px}.mobile-nav button.active{color:#e9b967}.split{grid-template-columns:1fr}.section-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:15px}.stage .lyrics{font-size:24px}} </style></head><body>
+<div id="auth" class="auth"><div class="auth-card"><div class="auth-logo">RAV</div><h1>RAV <span style="color:#e9b967">Praise Team</span></h1><p class="muted">Acceso privado · RÍOS DE AGUA VIVA</p><div class="field"><label>Correo electrónico</label><input id="email" type="email" autocomplete="username" placeholder="tu@correo.com"></div><div class="field"><label>Contraseña</label><input id="password" type="password" autocomplete="current-password" placeholder="Contraseña"></div><button class="btn" id="loginBtn">Iniciar sesión</button><p id="authError" class="warning small"></p><div class="notice">Esta versión requiere configurar Supabase para habilitar el acceso real. No existe acceso de demostración que permita saltar la autenticación.</div></div></div>
+<div id="app" class="shell hidden"><aside class="sidebar"><div class="brand">RAV <span>Praise Team</span></div><button class="nav active" data-tab="home">⌂ &nbsp; Inicio</button><button class="nav" data-tab="songs">♫ &nbsp; Cantos</button><button class="nav" data-tab="setlists">▤ &nbsp; Playlists</button><button class="nav" data-tab="stage">▣ &nbsp; Setlist en vivo</button><button class="nav" data-tab="chat">☏ &nbsp; Chat</button><button class="nav nav-bottom" data-tab="account">◉ &nbsp; Cuenta</button></aside><main class="main"><div class="top"><h1 id="pageTitle">Inicio</h1><div class="topright"><span id="roleBadge" class="pill">Monitor</span><button id="logoutTop" class="btn secondary sm">Salir</button></div></div><div id="page"></div></main><nav class="mobile-nav"><button data-tab="home">Inicio</button><button data-tab="songs">Cantos</button><button data-tab="setlists">Playlists</button><button data-tab="stage">Setlist</button><button data-tab="chat">Chat</button><button data-tab="account">Cuenta</button></nav></div>
 <script>
-const URL_='https://dprgngugbcosnbrnlore.supabase.co',KEY='sb_publishable_CPh0UNtcxQJ-xZNkhDU2Kg_6FYYcbsb';
-const $=s=>document.querySelector(s);
-const ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
-const sv=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const nextSun=()=>{const d=new Date();d.setDate(d.getDate()+(7-d.getDay())%7);return d.toLocaleDateString('sv')};
-const fd=d=>new Date(d+'T12:00').toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
-let songs=ls('songs',[]),setl=ls('setl',{date:nextSun(),ids:[]}),auth=ls('auth',null),tr=ls('tr',{}),fs=ls('fs',20);
-const dfl=()=>({intro:'#ffffff',estrofa:'#ffffff',pre:'#ffffff',coro:'#ffffff',puente:'#ffffff'});let lc={...dfl(),...ls('lc',{})};
-let view='songs',curId=null,editId=null,q='',mode=ls('mode','full'),vi=0;
-const role=()=>{try{return JSON.parse(atob(auth.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).app_metadata?.role}catch{return null}};
-const lead=()=>!!auth&&role()==='leader';
-function msg(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(msg.t);msg.t=setTimeout(()=>e.classList.remove('on'),3000)}
-
-/* Supabase (REST, sin librerías para que todo funcione offline) */
-async function api(path,opt={}){
-  const r=await fetch(URL_+path,{...opt,headers:{apikey:KEY,'Content-Type':'application/json',Authorization:'Bearer '+(auth?auth.access_token:KEY),...opt.headers}});
-  if(!r.ok)throw new Error(r.status);
-  return r.json().catch(()=>null)}
-async function login(e,p){
-  const r=await fetch(URL_+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})});
-  const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Error');auth=j;sv('auth',auth)}
-async function refresh(){
-  if(!auth?.refresh_token)return;
-  const r=await fetch(URL_+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:auth.refresh_token})});
-  if(r.ok){auth=await r.json();sv('auth',auth)}else if(r.status==400||r.status==401)wipe()}
-const up={method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'}};
-async function push(s){const{pending,...o}=s;o.updated_at=new Date().toISOString();await api('/rest/v1/songs',{...up,body:JSON.stringify(o)});s.pending=false}
-async function pushSet(){await api('/rest/v1/setlists?on_conflict=service_date',{...up,body:JSON.stringify({service_date:setl.date,song_ids:setl.ids,updated_at:new Date().toISOString()})});setl.pending=false;sv('setl',setl)}
-async function sync(silent){
-  if(!auth){if(!silent)msg('Inicia sesión para sincronizar');return}
-  if(!silent)msg('Sincronizando…');
-  try{
-    await refresh();if(!auth)throw 0;
-    for(const s of songs.filter(x=>x.pending))await push(s);
-    if(setl.pending&&lead())await pushSet();
-    songs=await api('/rest/v1/songs?select=*&order=title');sv('songs',songs);
-    const r=await api('/rest/v1/setlists?select=*&order=service_date&limit=1&service_date=gte.'+new Date().toLocaleDateString('sv'));
-    if(r[0]&&!setl.pending){setl={date:r[0].service_date,ids:r[0].song_ids};sv('setl',setl)}
-    sv('last',new Date().toLocaleString('es'));
-    if(!silent)msg('Listo: '+songs.length+' cantos guardados en este dispositivo');render()
-  }catch(e){if(!silent)msg('No se pudo sincronizar. Revisa tu conexión o vuelve a iniciar sesión.')}}
-
-/* Transposición */
-const N=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'],M={Db:'C#','D#':'Eb',Gb:'F#','G#':'Ab','A#':'Bb',Cb:'B','E#':'F','B#':'C',Fb:'E'};
-const tc=(c,n)=>c.replace(/[A-G][b#]?/g,m=>{const i=N.indexOf(M[m]||m);return i<0?m:N[(i+n+120)%12]});
-const tk=t=>{t=t.toLowerCase();return /pre/.test(t)?'p':/coro|chorus/.test(t)?'c':/puente|bridge/.test(t)?'b':'v'};
-function lyr(b,n){if(typeof b!=='string')b=b.body;let ty='estrofa';return b.split('\n').map(l=>{
-  if(l.startsWith('#')){const t=l.slice(1).trim();ty=typ(t);return`<h3 class="${tk(t)}">${esc(t)}</h3>`}
-  if(!l.trim())return'<div class="gap"></div>';
-  const p=l.split(/\[([^\]]+)\]/);let h=`<div class="ln" style="color:${lc[ty]}">`;
-  if(p[0])h+=`<span class="sg"><i>&nbsp;</i><b>${esc(p[0])}</b></span>`;
-  for(let i=1;i<p.length;i+=2)h+=`<span class="sg"><i>${esc(tc(p[i],n))}</i><b>${esc(p[i+1]||'')||'&nbsp;'}</b></span>`;
-  return h+'</div>'}).join('')}
-
-/* Vistas */
-function lst(){const t=q.toLowerCase();
-  const a=songs.filter(s=>(s.title+' '+(s.author||'')+' '+s.key).toLowerCase().includes(t));
-  return a.length?a.map(s=>`<div class="row" onclick="openS('${s.id}')"><b>${esc(s.title)}</b><span>${esc(s.author||'')}</span><em>${esc(s.key)}</em></div>`).join(''):
-  `<p class="mt">${songs.length?'No hay cantos con esa búsqueda.':'Aún no hay cantos. Entra en Cuenta, inicia sesión y toca Sincronizar.'}</p>`}
-const vSongs=()=>`<input id="q" type="search" placeholder="Buscar canto, autor o tono" value="${esc(q)}" oninput="q=this.value;$('#lst').innerHTML=lst()">${lead()?'<button class="pri" onclick="edit()">Nuevo canto</button>':''}<div id="lst">${lst()}</div>`;
-function vSong(){const s=songs.find(x=>x.id==curId);if(!s){view='songs';return vSongs()}
-  const n=tr[s.id]||0,inn=setl.ids.includes(s.id),b=exp(s.body),sc=secs(b),vm=mode=='verse';vi=Math.max(0,Math.min(vi,sc.length-1));
-  const bar=`<div class="bar"><button onclick="go('songs')">Volver</button><button onclick="tp(-1)">−1</button><span>${esc(tc(s.key,n))}</span><button onclick="tp(1)">+1</button><button onclick="fz(-2)">A−</button><button onclick="fz(2)">A+</button><button onclick="document.body.classList.toggle('stage')">Escenario</button><button onclick="sm()">${vm?'Completo':'Estrofas'}</button></div>`;
-  const ed=lead()?`<div class="bar"><button onclick="tog('${s.id}')">${inn?'Quitar del setlist':'Agregar al setlist'}</button><button onclick="edit('${s.id}')">Editar</button></div>`:'';
-  if(!vm)return bar+`<div class="song" style="font-size:${fs}px">${lyr(b,n)}</div>`+ed;
-  const nm=(x,i)=>x.startsWith('#')?x.split('\n')[0].slice(1).trim()||'Parte '+(i+1):'Parte '+(i+1);
-  return bar+`<div class="bar chips">${sc.map((x,i)=>`<button class="${i==vi?'on':''}" onclick="vj(${i})">${esc(nm(x,i))}</button>`).join('')}</div><div class="song sec" style="font-size:${fs+6}px">${lyr({body:sc[vi]},n)}</div>${ed}<div class="pn"><button onclick="vs(-1)">◀ Anterior</button><span>${vi+1}/${sc.length}</span><button class="pri" onclick="vs(1)">Siguiente ▶</button></div>`}
-function vSet(){const L=lead(),a=setl.ids.map(i=>songs.find(s=>s.id==i)).filter(Boolean);
-  return(L?`<input type="date" value="${setl.date}" onchange="setl.date=this.value;setl.pending=true;sv('setl',setl);render()">`:'')+
-  (a.length?a.map((s,i)=>`<div class="row"><b onclick="openS('${s.id}')">${i+1}. ${esc(s.title)}</b><em>${esc(tc(s.key,tr[s.id]||0))}</em>${L?`<button onclick="mv(${i},-1)">↑</button><button onclick="mv(${i},1)">↓</button><button onclick="rm(${i})">✕</button>`:''}</div>`).join(''):
-  `<p class="mt">El setlist está vacío.${L?' Abre un canto y toca Agregar al setlist.':''}</p>`)+
-  (L?'<p></p><button class="pri" onclick="saveSet()">Guardar setlist</button>':'')}
-const vAcct=()=>`<div class="logo"><img src="logo.png" alt="RAV Praise Team"></div><div class="card">${auth?`<p>${esc(auth.user?.email||'')}<br><span class="mt">Rol: ${lead()?'líder':'miembro'}</span></p><button class="pri" onclick="sync()">Sincronizar ahora</button> <button onclick="out()">Cerrar sesión</button><p class="mt">Última sincronización: ${esc(ls('last','nunca'))}</p>`:
-  `<p class="mt">Inicia sesión para ver los cantos y el setlist del grupo.</p><input id="em" type="email" placeholder="Correo" autocomplete="username"><input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password"><button class="pri" onclick="doLogin()">Entrar</button>`}</div>`+vColors();
-function vEdit(){const s=songs.find(x=>x.id==editId)||{title:'',author:'',key:'C',body:''},{B,ord}=s.body?parts(s.body):{B:emptyB(),ord:''};
-  const hint={intro:'opcional',estrofa:'varias estrofas: sepáralas con una línea en blanco',pre:'opcional',coro:'',puente:'opcional'},rows={intro:4,estrofa:9,pre:4,coro:6,puente:4};
-  return`<input id="et" placeholder="Título" value="${esc(s.title)}"><input id="ea" placeholder="Autor" value="${esc(s.author||'')}"><input id="ek" placeholder="Tono (ej. G)" value="${esc(s.key)}">`+
-  TY.map(([t,n])=>`<label class="lb">${n}<small>${hint[t]}</small></label><textarea id="b-${t}" rows="${rows[t]}" placeholder="[G]Letra con [C]acordes">${esc(B[t].join('\n\n'))}</textarea>`).join('')+
-  `<label class="lb">Orden del canto<small>cómo se canta de principio a fin</small></label><input id="eo" placeholder="Intro, Estrofa, Pre-coro, Coro" value="${esc(ord)}"><button type="button" onclick="sugg()">Orden sugerido</button>
-<p class="mt">Escribe cada parte una sola vez, con el acorde entre corchetes antes de la sílaba. En el orden repite las partes las veces que se canten, por ejemplo: Intro, Estrofa 1, Coro, Estrofa 2, Coro, Puente, Coro.</p>
-<div class="bar"><button class="pri" onclick="saveS()">Guardar canto</button>${s.id?'<button onclick="delS()">Eliminar</button>':''}<button onclick="go('songs')">Cancelar</button></div>`}
-
-function render(){
-  if(!auth&&view!='acct')view='acct';
-  document.body.dataset.v=view;
-  const V={songs:vSongs,song:vSong,set:vSet,acct:vAcct,edit:vEdit};$('#app').innerHTML=V[view]();
-  const s=songs.find(x=>x.id==curId);
-  $('#ttl').textContent=({songs:'Cantos',set:'Setlist · '+fd(setl.date),acct:'Cuenta',edit:'Canto',song:s?s.title:''})[view];
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==(view=='song'||view=='edit'?'songs':view)))}
-function go(v){view=v;if(v!='song')document.body.classList.remove('stage');render();scrollTo(0,0)}
-const openS=id=>{curId=id;vi=0;go('song')};
-const edit=id=>{editId=id||null;go('edit')};
-function tp(d){tr[curId]=((tr[curId]||0)+d+12)%12;sv('tr',tr);render()}
-function secs(b){const L=b.split('\n'),h=L.some(l=>l.startsWith('#')),o=[];let c=[];const f=()=>{if(c.some(x=>x.trim()))o.push(c.join('\n'));c=[]};
-  for(const l of L){if(h){if(l.startsWith('#'))f();c.push(l)}else{if(!l.trim())f();else c.push(l)}}f();return o.length?o:[b]}
-function sm(){mode=mode=='verse'?'full':'verse';vi=0;sv('mode',mode);render()}
-function vj(i){vi=i;render();scrollTo(0,0)}
-function vs(d){const s=songs.find(x=>x.id==curId);if(!s)return;vi=Math.max(0,Math.min(secs(exp(s.body)).length-1,vi+d));render();scrollTo(0,0)}
-let tx=null;
-document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
-document.addEventListener('touchend',e=>{if(tx===null||view!='song'||mode!='verse')return;const d=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(d)>70)vs(d<0?1:-1)},{passive:true});
-document.addEventListener('keydown',e=>{if(view=='song'&&mode=='verse'){if(e.key=='ArrowRight')vs(1);if(e.key=='ArrowLeft')vs(-1)}});
-/* Partes del canto: cada parte se escribe una vez y el orden las arma */
-const TY=[['intro','Intro'],['estrofa','Estrofa'],['pre','Pre-coro'],['coro','Coro'],['puente','Puente']],lab=t=>TY.find(x=>x[0]==t)[1];
-const nrm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-const typ=t=>{t=nrm(t);return /intro/.test(t)?'intro':/pre/.test(t)?'pre':/coro|chorus/.test(t)?'coro':/puente|bridge/.test(t)?'puente':'estrofa'};
-const tok=r=>{const t=nrm(r);return /intro/.test(t)?'intro':/pre/.test(t)?'pre':/coro|chorus/.test(t)?'coro':/puente|bridge/.test(t)?'puente':/estrofa|verso|verse/.test(t)?'estrofa':null};
-const emptyB=()=>({intro:[],estrofa:[],pre:[],coro:[],puente:[]});
-function parts(body){
-  const L=body.split('\n');let ord='';
-  if(/^@orden:/i.test(L[0]||''))ord=L.shift().replace(/^@orden:/i,'').trim();
-  const S=[];let c=null;
-  if(L.some(l=>l.startsWith('#'))){for(const l of L){if(l.startsWith('#')){c={t:l.slice(1).trim(),l:[]};S.push(c)}else if(c)c.l.push(l)}}
-  else{for(const l of L){if(!l.trim()){c=null;continue}if(!c){c={t:'Estrofa',l:[]};S.push(c)}c.l.push(l)}}
-  const B=emptyB(),seq=[],dd=!ord;
-  for(const x of S){const t=typ(x.t),tx=x.l.join('\n').trim();if(!tx)continue;let i=dd?B[t].indexOf(tx):-1;if(i<0){B[t].push(tx);i=B[t].length-1}seq.push([t,i])}
-  if(!ord)ord=seq.map(([t,i])=>lab(t)+(B[t].length>1?' '+(i+1):'')).join(', ');
-  return{B,ord}}
-function sug(B){const o=[],n=B.estrofa.length;if(B.intro.length)o.push('Intro');
-  for(let i=0;i<n;i++){o.push('Estrofa'+(n>1?' '+(i+1):''));if(B.pre.length)o.push('Pre-coro');if(B.coro.length)o.push('Coro')}
-  if(!n){if(B.pre.length)o.push('Pre-coro');if(B.coro.length)o.push('Coro')}
-  if(B.puente.length){o.push('Puente');if(B.coro.length)o.push('Coro')}
-  return o.join(', ')}
-function build(B,ord){const o=['@orden: '+ord];
-  for(const[t]of TY)B[t].forEach((tx,i)=>o.push('','# '+lab(t)+(B[t].length>1?' '+(i+1):''),tx));
-  return o.join('\n')}
-function exp(body){
-  if(!/^@orden:/i.test(body.split('\n')[0]||''))return body;
-  const{B,ord}=parts(body),u={intro:0,estrofa:0,pre:0,coro:0,puente:0},o=[];
-  for(const r of ord.split(',')){const t=tok(r);if(!t||!B[t].length)continue;const m=r.match(/(\d+)\s*$/);
-    let i=m?+m[1]-1:u[t]++;i=Math.max(0,Math.min(i,B[t].length-1));
-    o.push('# '+lab(t)+(B[t].length>1?' '+(i+1):''),B[t][i],'')}
-  return o.join('\n').trim()}
-const getB=()=>{const B=emptyB();for(const[t]of TY)B[t]=($('#b-'+t).value||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);return B};
-const sugg=()=>{$('#eo').value=sug(getB())};
-const setC=(t,v)=>{lc[t]=v;sv('lc',lc);const e=$('#pv-'+t);if(e)e.style.color=v};
-const resetC=()=>{lc=dfl();sv('lc',lc);render()};
-const vColors=()=>`<div class="card"><b>Color de la letra</b><p class="mt">Elige el color de cada parte. Queda guardado en este dispositivo y las letras empiezan en blanco.</p>`+TY.map(([t,n])=>`<div class="row cr"><span class="pv" id="pv-${t}" style="color:${lc[t]}">${n}</span><input type="color" value="${lc[t]}" oninput="setC('${t}',this.value)"></div>`).join('')+`<button onclick="resetC()">Todo en blanco</button></div>`;
-function fz(d){fs=Math.max(12,Math.min(48,fs+d));sv('fs',fs);render()}
-function chg(){setl.pending=true;sv('setl',setl);render()}
-function tog(id){if(setl.ids.includes(id))setl.ids=setl.ids.filter(x=>x!=id);else setl.ids.push(id);chg()}
-function mv(i,d){const j=i+d,a=setl.ids;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];chg()}
-function rm(i){setl.ids.splice(i,1);chg()}
-async function saveSet(){setl.pending=true;sv('setl',setl);
-  try{await refresh();await pushSet();msg('Setlist guardado')}catch{msg('Sin conexión: se enviará al sincronizar')}}
-async function saveS(){const t=$('#et').value.trim(),B=getB();if(!t||!TY.some(([k])=>B[k].length)){msg('Escribe el título y al menos una parte');return}
-  const ord=$('#eo').value.trim()||sug(B),bad=ord.split(',').map(x=>x.trim()).filter(Boolean).filter(x=>{const k=tok(x);return !k||!B[k].length});
-  if(bad.length){msg('En el orden no se entiende o está vacía la caja: '+bad.join(', '));return}
-  const b=build(B,ord);
-  let s=songs.find(x=>x.id==editId);if(!s){s={id:crypto.randomUUID()};songs.push(s)}
-  Object.assign(s,{title:t,author:$('#ea').value.trim(),key:$('#ek').value.trim()||'C',body:b,pending:true});sv('songs',songs);
-  try{await refresh();await push(s);sv('songs',songs);msg('Canto guardado')}catch{msg('Sin conexión: se enviará al sincronizar')}
-  go('songs')}
-async function delS(){if(!confirm('¿Eliminar este canto?'))return;
-  try{await refresh();await api('/rest/v1/songs?id=eq.'+editId,{method:'DELETE'});
-    songs=songs.filter(x=>x.id!=editId);setl.ids=setl.ids.filter(i=>i!=editId);sv('songs',songs);sv('setl',setl);go('songs')}
-  catch{msg('Necesitas conexión para eliminar')}}
-async function doLogin(){try{await login($('#em').value.trim(),$('#pw').value);await sync();location.hash=='#nuevo'&&lead()?edit():go('songs')}catch(e){msg('No se pudo entrar: '+e.message)}}
-function wipe(){auth=null;songs=[];setl={date:nextSun(),ids:[]};['auth','songs','setl','last'].forEach(k=>localStorage.removeItem(k))}
-function out(){wipe();view='acct';render()}
-
-if(location.hash=='#nuevo'){if(lead())view='edit';else view='acct'}
-render();if(location.hash=='#nuevo'&&!lead())msg('Inicia sesión como líder para agregar cantos');
-if(auth)sync(true);
-if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+'use strict';
+// CONFIGURA ESTOS DOS VALORES CON LOS DE TU PROYECTO EXISTENTE.
+// La clave ANON/PUBLISHABLE es pública por diseño. NUNCA coloques aquí service_role ni claves secretas.
+const SUPABASE_URL='';
+const SUPABASE_ANON_KEY='';
+const LOCAL_PREFIX='ravpt_v1_';
+const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>globalThis.crypto?.randomUUID?.()||String(Date.now())+Math.random().toString(36).slice(2);
+const sampleSections=()=>[{id:uid(),type:'Intro',lyrics:'Instrumental',chords:'G D Em C',color:'#ffffff'},{id:uid(),type:'Estrofa 1',lyrics:'',chords:'',color:'#ffffff'},{id:uid(),type:'Coro',lyrics:'',chords:'',color:'#ffffff'}];
+let session=null,role='monitor',tab='home',songs=[],playlists=[],chat=[],activePlaylist=null,activeSong=null,activeSection=0,stageKey='G',editSongId=null,editPlaylistId=null,leaderMode=false,monitorOnly=false;
+const KEYS=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+const norm={Db:'C#',D#:'Eb',Gb:'F#',G#:'Ab',A#:'Bb'};
+function transpose(text,from,to){let diff=KEYS.indexOf(to)-KEYS.indexOf(from);if(!Number.isFinite(diff))return text;return String(text).replace(/(^|[\s|/()])([A-G](?:#|b)?)(m(?:aj|in)?\d*|sus\d*|add\d*|dim|aug|7|9|11|13|m)?(?=$|[\s|/()])/g,(all,pre,root,suf)=>{let n=KEYS.indexOf(norm[root]||root);return n<0?all:pre+KEYS[(n+diff+12)%12]+(suf||'')})}
+function store(k,v){localStorage.setItem(LOCAL_PREFIX+k,JSON.stringify(v))}function load(k,def){try{return JSON.parse(localStorage.getItem(LOCAL_PREFIX+k))??def}catch{return def}}
+function dataKey(k){return session?.user?.id+'_'+k}
+function loadData(){songs=load(dataKey('songs'),[]);playlists=load(dataKey('playlists'),[]);chat=load(dataKey('chat'),[]);activePlaylist=load(dataKey('activePlaylist'),null);activeSong=load(dataKey('activeSong'),null);activeSection=0;leaderMode=false}
+function persist(){store(dataKey('songs'),songs);store(dataKey('playlists'),playlists);store(dataKey('chat'),chat);store(dataKey('activePlaylist'),activePlaylist);store(dataKey('activeSong'),activeSong)}
+function canEdit(){return role==='leader'&&!monitorOnly}function gate(){if(!canEdit()){alert('Solo un líder autorizado puede realizar esta acción.');return false}return true}
+async function request(path,method='GET',body,token){const res=await fetch(SUPABASE_URL.replace(/\/$/,'')+path,{method,headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:body?JSON.stringify(body):undefined});const data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.msg||data.error_description||data.message||'Error de conexión');return data}
+async function login(){if(!SUPABASE_URL||!SUPABASE_ANON_KEY){$('authError').textContent='Primero configura SUPABASE_URL y SUPABASE_ANON_KEY dentro de index.html.';return}const email=$('email').value.trim(),password=$('password').value;if(!email||!password){$('authError').textContent='Ingresa correo y contraseña.';return}try{$('loginBtn').disabled=true;$('authError').textContent='';const a=await request('/auth/v1/token?grant_type=password','POST',{email,password});if(!a.access_token||!a.user)throw Error('No se pudo autenticar');session=a;role=a.user.app_metadata?.role==='leader'?'leader':'monitor';store('session',a);loadData();showApp()}catch(e){$('authError').textContent=e.message}finally{$('loginBtn').disabled=false}}
+async function restore(){if(!SUPABASE_URL||!SUPABASE_ANON_KEY)return;const a=load('session',null);if(!a?.refresh_token)return;try{const b=await request('/auth/v1/token?grant_type=refresh_token','POST',{refresh_token:a.refresh_token});if(!b.access_token||!b.user)return;session=b;role=b.user.app_metadata?.role==='leader'?'leader':'monitor';store('session',b);loadData();showApp()}catch{localStorage.removeItem(LOCAL_PREFIX+'session')}}
+function logout(){session=null;role='monitor';localStorage.removeItem(LOCAL_PREFIX+'session');$('app').classList.add('hidden');$('auth').classList.remove('hidden');$('password').value=''}
+function showApp(){$('auth').classList.add('hidden');$('app').classList.remove('hidden');render()}
+const names={home:'Inicio',songs:'Cantos',setlists:'Playlists por evento',stage:'Setlist en vivo',chat:'Chat del equipo',account:'Cuenta'};
+function switchTab(t){tab=t;editSongId=null;editPlaylistId=null;render()}
+function render(){$('pageTitle').textContent=names[tab];$('roleBadge').textContent=role==='leader'?'Líder autorizado':'Monitor';document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));const views={home:renderHome,songs:renderSongs,setlists:renderPlaylists,stage:renderStage,chat:renderChat,account:renderAccount};$('page').innerHTML=views[tab]();bindPage()}
+function renderHome(){let upcoming=[...playlists].sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,3);return `<div class="panel"><h2>Bienvenido a RAV Praise Team</h2><p class="muted">Prepara cantos, organiza eventos y consulta la presentación del equipo.</p><div class="grid"><div class="card"><h3>${songs.length}</h3><div class="muted">Cantos guardados</div></div><div class="card"><h3>${playlists.length}</h3><div class="muted">Playlists por evento</div></div><div class="card"><h3>${esc(role==='leader'?'Líder':'Monitor')}</h3><div class="muted">Tu permiso actual</div></div></div></div><div class="panel"><h2>Próximos eventos</h2>${upcoming.length?upcoming.map(p=>`<div class="listitem row"><div><b>${esc(p.name)}</b><div class="muted small">${esc(p.date||'Sin fecha')} · ${p.items.length} cantos</div></div><button class="btn secondary sm" data-openplaylist="${esc(p.id)}">Ver</button></div>`).join(''):'<div class="empty">Aún no hay eventos guardados.</div>'}</div><div class="notice">Esta primera versión guarda canciones, playlists y mensajes en este dispositivo después de iniciar sesión con Supabase. La sincronización entre dispositivos, el control exclusivo y el servidor Raspberry Pi requieren la siguiente integración.</div>`}
+function renderSongs(){if(editSongId!==null)return renderSongEditor();return `<div class="panel"><div class="row"><div><h2>Biblioteca de cantos</h2><p class="muted small">Estrofas independientes, acordes y tono original.</p></div>${canEdit()?'<button class="btn" id="newSong">+ Nuevo canto</button>':''}</div><input class="search" id="songSearch" placeholder="Buscar por título o autor..." style="margin:10px 0 15px"><div id="songResults">${songCards(songs)}</div></div>`}
+function songCards(arr){return arr.length?`<div class="grid">${arr.map(s=>`<div class="card"><div class="tag">Tono original: ${esc(s.key)}</div><h3>${esc(s.title)}</h3><div class="muted small">${esc(s.author||'Sin autor')} · ${s.sections.length} secciones</div><div class="actions" style="margin-top:13px"><button class="btn secondary sm" data-view-song="${esc(s.id)}">Ver</button>${canEdit()?`<button class="btn outline sm" data-edit-song="${esc(s.id)}">Editar</button>`:''}</div></div>`).join('')}</div>`:'<div class="empty">No hay cantos todavía.</div>'}
+function renderSongEditor(){let s=songs.find(x=>x.id===editSongId)||{id:'',title:'',author:'',key:'G',sections:sampleSections()};return `<div class="panel"><div class="row"><h2>${s.id?'Editar canto':'Nuevo canto'}</h2><button class="btn secondary sm" id="cancelSong">Volver</button></div><div class="grid"><div class="field"><label>Título</label><input id="songTitle" value="${esc(s.title)}"></div><div class="field"><label>Autor</label><input id="songAuthor" value="${esc(s.author)}"></div><div class="field"><label>Tonalidad original</label><select id="songKey">${KEYS.map(k=>`<option ${s.key===k?'selected':''}>${k}</option>`).join('')}</select></div></div><h2>Secciones del canto</h2><p class="muted small">Cada estrofa, coro y puente tendrá su propio espacio. Blanco por defecto.</p><div id="sectionEditors">${s.sections.map((p,i)=>sectionEditor(p,i)).join('')}</div><div class="actions"><button class="btn secondary" id="addSection">+ Agregar sección</button><button class="btn" id="saveSong">Guardar canto</button>${s.id?'<button class="btn danger" id="deleteSong">Eliminar canto</button>':''}</div></div>`}
+function sectionEditor(p,i){return `<div class="section-editor" data-section-row="${i}"><div class="row"><b>Sección ${i+1}</b><button class="btn danger sm" data-remove-section="${i}">Quitar</button></div><div class="grid" style="margin-top:10px"><div class="field"><label>Nombre (Estrofa 1, Estrofa 2, Coro...)</label><input class="section-type" value="${esc(p.type)}"></div><div class="field"><label>Color de identificación</label><input type="color" class="section-color color-input" value="${/^#[0-9a-f]{6}$/i.test(p.color)?p.color:'#ffffff'}"></div></div><div class="field"><label>Letra</label><textarea class="section-lyrics">${esc(p.lyrics)}</textarea></div><div class="field"><label>Acordes (separados por espacios)</label><input class="section-chords" value="${esc(p.chords)}"></div></div>`}
+function collectSections(){return [...document.querySelectorAll('[data-section-row]')].map(x=>({id:uid(),type:x.querySelector('.section-type').value.trim()||'Sección',lyrics:x.querySelector('.section-lyrics').value,chords:x.querySelector('.section-chords').value,color:x.querySelector('.section-color').value}))}
+function renderPlaylists(){if(editPlaylistId!==null)return renderPlaylistEditor();return `<div class="panel"><div class="row"><div><h2>Playlists guardadas</h2><p class="muted small">Una playlist diferente para cada servicio, ensayo o evento.</p></div>${canEdit()?'<button class="btn" id="newPlaylist">+ Nuevo evento</button>':''}</div><div class="grid" style="margin-top:16px">${playlists.length?playlists.map(p=>`<div class="card"><div class="tag">${esc(p.date||'Sin fecha')}</div><h3>${esc(p.name)}</h3><p class="muted small">${p.items.length} cantos · ${esc(p.status||'En preparación')}</p><div class="actions"><button class="btn secondary sm" data-openplaylist="${esc(p.id)}">Abrir</button>${canEdit()?`<button class="btn outline sm" data-editplaylist="${esc(p.id)}">Editar</button><button class="btn outline sm" data-duplicate="${esc(p.id)}">Duplicar</button>`:''}</div></div>`).join(''):'<div class="empty">Crea tu primera playlist para un evento.</div>'}</div></div>`}
+function renderPlaylistEditor(){let p=playlists.find(x=>x.id===editPlaylistId)||{id:'',name:'',date:'',status:'En preparación',items:[]};return `<div class="panel"><div class="row"><h2>${p.id?'Editar playlist':'Nueva playlist'}</h2><button class="btn secondary sm" id="cancelPlaylist">Volver</button></div><div class="grid"><div class="field"><label>Nombre del evento</label><input id="playlistName" value="${esc(p.name)}" placeholder="Ej. Servicio dominical"></div><div class="field"><label>Fecha</label><input type="date" id="playlistDate" value="${esc(p.date)}"></div><div class="field"><label>Estado</label><select id="playlistStatus">${['En preparación','Lista','Finalizada'].map(x=>`<option ${p.status===x?'selected':''}>${x}</option>`).join('')}</select></div></div><h2>Cantos en esta playlist</h2><div id="playlistItems">${playlistItemsHtml(p.items)}</div><div class="actions" style="margin-top:15px"><button class="btn secondary" id="addPlaylistSong" ${songs.length?'':'disabled'}>+ Agregar canto</button><button class="btn" id="savePlaylist">Guardar playlist</button>${p.id?'<button class="btn danger" id="deletePlaylist">Eliminar playlist</button>':''}</div></div>`}
+function playlistItemsHtml(items){return items.length?items.map((it,i)=>{let s=songs.find(x=>x.id===it.songId);return `<div class="listitem row" data-item-row="${i}"><div style="flex:1"><b>${i+1}. ${esc(s?.title||'Canto eliminado')}</b><div class="muted small">Tono para este evento</div><select class="item-key" style="background:#101b2b;color:white;padding:6px;border-radius:6px">${KEYS.map(k=>`<option ${it.key===k?'selected':''}>${k}</option>`).join('')}</select><input type="hidden" class="item-song" value="${esc(it.songId)}"></div><div class="actions"><button class="btn secondary sm" data-move-up="${i}" ${i===0?'disabled':''}>↑</button><button class="btn secondary sm" data-move-down="${i}" ${i===items.length-1?'disabled':''}>↓</button><button class="btn danger sm" data-remove-item="${i}">×</button></div></div>`}).join(''):'<div class="empty">Esta playlist todavía no tiene cantos.</div>'}
+function renderStage(){let p=playlists.find(x=>x.id===activePlaylist),items=p?.items||[],item=items.find(x=>x.songId===activeSong)||items[0],s=songs.find(x=>x.id===item?.songId),sect=s?.sections[activeSection]||s?.sections[0];return `<div class="setlist-screen"><div class="row"><div><b>SETLIST</b><div class="small" style="color:#bbb">Fondo negro · letra blanca</div></div><span class="pill">${leaderMode?'Vista líder local':'Vista monitor / preparación'}</span></div><div class="inline" style="margin-top:20px"><div class="field"><label>Playlist</label><select id="stagePlaylist"><option value="">Selecciona evento</option>${playlists.map(x=>`<option value="${esc(x.id)}" ${x.id===activePlaylist?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div><div class="field"><label>Canto</label><select id="stageSong">${items.map(it=>{let song=songs.find(x=>x.id===it.songId);return `<option value="${esc(it.songId)}" ${it.songId===(s?.id||activeSong)?'selected':''}>${esc(song?.title||'Canto eliminado')}</option>`}).join('')}</select></div><div class="field"><label>Tonalidad</label><select id="stageKey">${KEYS.map(k=>`<option ${k===(s?stageKey:'G')?'selected':''}>${k}</option>`).join('')}</select></div></div>${canEdit()?`<div class="actions"><button class="btn secondary sm" id="toggleLeader">${leaderMode?'Salir de vista líder':'Vista líder (solo local)'}</button></div>`:''}${s?`<h2 style="color:white;margin-top:20px">${esc(s.title)}</h2><div class="section-grid">${s.sections.map((part,i)=>`<button class="section ${i===activeSection?'active':''}" data-stage-section="${i}"><div class="name" style="color:${esc(part.color||'#ffffff')}">${esc(part.type)}</div><div class="preview">${esc(part.lyrics.slice(0,90))}</div></button>`).join('')}</div><div class="stage ${monitorOnly?'monitor':''}"><div class="sectlabel" style="color:${esc(sect?.color||'#ffffff')}">${esc(sect?.type||'')}</div><div class="chords">${esc(transpose(sect?.chords||'',s.key,stageKey))}</div><div class="lyrics">${esc(sect?.lyrics||'Instrumental')}</div></div><div class="actions" style="justify-content:center;margin-top:15px"><button class="btn secondary" id="prevSection" ${activeSection===0?'disabled':''}>← Anterior</button><button class="btn secondary" id="nextSection" ${activeSection===s.sections.length-1?'disabled':''}>Siguiente →</button></div>`:'<div class="empty">Elige una playlist con cantos para visualizar las secciones.</div>'}<p class="small" style="color:#999">Vista local de prueba. Todavía NO controla otros dispositivos ni bloquea líderes simultáneos.</p></div>`}
+function renderChat(){return `<div class="panel"><h2>Chat privado del equipo</h2><p class="muted small">Prototipo local. Los mensajes aún no se envían a otros dispositivos.</p><div class="chatlog" id="chatlog">${chat.map(m=>`<div class="bubble mine"><b>${esc(m.name)}</b>${esc(m.text)}<div class="small muted">${esc(m.time)}</div></div>`).join('')}</div><div class="inline" style="margin-top:12px"><div class="field" style="flex:4"><label>Mensaje</label><input id="chatInput" maxlength="500" placeholder="Escribe un mensaje..."></div><button class="btn" id="sendChat" style="margin-bottom:12px">Enviar</button></div></div>`}
+function renderAccount(){return `<div class="panel"><h2>Mi cuenta</h2><div class="listitem"><b>Correo</b><p class="muted">${esc(session?.user?.email)}</p><b>Permiso</b><p class="muted">${role==='leader'?'Líder autorizado':'Monitor / lectura'}</p><b>Sesión</b><p class="muted">Sin cierre automático por inactividad. Puedes salir manualmente.</p></div><div class="actions" style="margin-top:15px"><button class="btn secondary" id="logoutAccount">Cerrar sesión</button></div></div><div class="panel"><h2>Acerca de esta versión</h2><p class="muted">Los datos creados aquí se guardan únicamente en este navegador y no en la base de datos de Supabase. Se requiere integrar la estructura real de las tablas y las políticas de acceso antes de publicarla para el equipo.</p><p class="muted">La futura Raspberry Pi administrará el único líder activo, los monitores sincronizados y el chat local.</p></div>`}
+function bindPage(){document.querySelectorAll('[data-openplaylist]').forEach(b=>b.onclick=()=>{activePlaylist=b.dataset.openplaylist;activeSong=null;activeSection=0;let p=playlists.find(x=>x.id===activePlaylist);let it=p?.items[0];stageKey=it?.key||'G';persist();tab='stage';render()});if(tab==='songs')bindSongs();if(tab==='setlists')bindPlaylists();if(tab==='stage')bindStage();if(tab==='chat'){$('sendChat').onclick=sendChat;$('chatInput').onkeydown=e=>{if(e.key==='Enter')sendChat()}}if(tab==='account')$('logoutAccount').onclick=logout}
+function bindSongs(){if(editSongId===null){if($('newSong'))$('newSong').onclick=()=>{editSongId='';render()};$('songSearch').oninput=e=>{$('songResults').innerHTML=songCards(songs.filter(s=>(s.title+' '+s.author).toLowerCase().includes(e.target.value.toLowerCase())));bindSongCards()};bindSongCards();return}$('cancelSong').onclick=()=>{editSongId=null;render()};$('addSection').onclick=()=>{let box=$('sectionEditors');let i=box.querySelectorAll('[data-section-row]').length;box.insertAdjacentHTML('beforeend',sectionEditor({type:'Estrofa '+(i+1),lyrics:'',chords:'',color:'#ffffff'},i));bindRemoveSections()};bindRemoveSections();$('saveSong').onclick=()=>{if(!gate())return;let title=$('songTitle').value.trim();if(!title)return alert('Escribe el título');let sections=collectSections();if(!sections.length)return alert('Agrega una sección');let id=editSongId||uid(),s={id,title,author:$('songAuthor').value.trim(),key:$('songKey').value,sections};songs=editSongId?songs.map(x=>x.id===id?s:x):[...songs,s];persist();editSongId=null;render()};if($('deleteSong'))$('deleteSong').onclick=()=>{if(!gate()||!confirm('¿Eliminar este canto?'))return;songs=songs.filter(x=>x.id!==editSongId);persist();editSongId=null;render()}}
+function bindSongCards(){document.querySelectorAll('[data-edit-song]').forEach(b=>b.onclick=()=>{editSongId=b.dataset.editSong;render()});document.querySelectorAll('[data-view-song]').forEach(b=>b.onclick=()=>{let s=songs.find(x=>x.id===b.dataset.viewSong);if(!s)return;alert(s.title+' ('+s.key+')\n\n'+s.sections.map(p=>p.type+'\n'+p.chords+'\n'+p.lyrics).join('\n\n'))})}
+function bindRemoveSections(){document.querySelectorAll('[data-remove-section]').forEach(b=>b.onclick=()=>{b.closest('[data-section-row]').remove();document.querySelectorAll('[data-section-row]').forEach((x,i)=>x.dataset.sectionRow=i)})}
+let draftItems=[];
+function bindPlaylists(){if(editPlaylistId===null){if($('newPlaylist'))$('newPlaylist').onclick=()=>{editPlaylistId='';draftItems=[];render()};document.querySelectorAll('[data-editplaylist]').forEach(b=>b.onclick=()=>{editPlaylistId=b.dataset.editplaylist;draftItems=structuredClone(playlists.find(x=>x.id===editPlaylistId).items);render()});document.querySelectorAll('[data-duplicate]').forEach(b=>b.onclick=()=>{if(!gate())return;let p=playlists.find(x=>x.id===b.dataset.duplicate);playlists.push({...structuredClone(p),id:uid(),name:p.name+' (copia)',status:'En preparación'});persist();render()});return}if(!draftItems.length&&editPlaylistId){draftItems=structuredClone(playlists.find(x=>x.id===editPlaylistId)?.items||[])}$('cancelPlaylist').onclick=()=>{editPlaylistId=null;draftItems=[];render()};$('addPlaylistSong').onclick=()=>{if(!songs.length)return;saveDraftKeys();draftItems.push({songId:songs[0].id,key:songs[0].key});refreshDraft()};$('savePlaylist').onclick=()=>{if(!gate())return;let name=$('playlistName').value.trim();if(!name)return alert('Escribe el nombre del evento');saveDraftKeys();let p={id:editPlaylistId||uid(),name,date:$('playlistDate').value,status:$('playlistStatus').value,items:draftItems};playlists=editPlaylistId?playlists.map(x=>x.id===editPlaylistId?p:x):[...playlists,p];persist();editPlaylistId=null;draftItems=[];render()};if($('deletePlaylist'))$('deletePlaylist').onclick=()=>{if(!gate()||!confirm('¿Eliminar esta playlist?'))return;playlists=playlists.filter(x=>x.id!==editPlaylistId);persist();editPlaylistId=null;draftItems=[];render()};bindDraftButtons()}
+function saveDraftKeys(){document.querySelectorAll('[data-item-row]').forEach(x=>{let i=+x.dataset.itemRow;if(draftItems[i])draftItems[i].key=x.querySelector('.item-key').value})}
+function refreshDraft(){$('playlistItems').innerHTML=playlistItemsHtml(draftItems);bindDraftButtons()}
+function bindDraftButtons(){document.querySelectorAll('[data-move-up]').forEach(b=>b.onclick=()=>{saveDraftKeys();let i=+b.dataset.moveUp;[draftItems[i-1],draftItems[i]]=[draftItems[i],draftItems[i-1]];refreshDraft()});document.querySelectorAll('[data-move-down]').forEach(b=>b.onclick=()=>{saveDraftKeys();let i=+b.dataset.moveDown;[draftItems[i+1],draftItems[i]]=[draftItems[i],draftItems[i+1]];refreshDraft()});document.querySelectorAll('[data-remove-item]').forEach(b=>b.onclick=()=>{saveDraftKeys();draftItems.splice(+b.dataset.removeItem,1);refreshDraft()});document.querySelectorAll('.item-song').forEach(x=>{let selector=document.createElement('select');selector.style='background:#101b2b;color:white;padding:6px;border-radius:6px;max-width:100%';selector.className='item-song-select';selector.innerHTML=songs.map(s=>`<option value="${esc(s.id)}" ${s.id===x.value?'selected':''}>${esc(s.title)}</option>`).join('');x.replaceWith(selector);selector.onchange=()=>{saveDraftKeys();draftItems[+selector.closest('[data-item-row]').dataset.itemRow].songId=selector.value;refreshDraft()}})}
+function bindStage(){$('stagePlaylist').onchange=e=>{activePlaylist=e.target.value;let p=playlists.find(x=>x.id===activePlaylist);activeSong=p?.items[0]?.songId||null;stageKey=p?.items[0]?.key||'G';activeSection=0;persist();render()};$('stageSong').onchange=e=>{activeSong=e.target.value;let p=playlists.find(x=>x.id===activePlaylist);stageKey=p?.items.find(x=>x.songId===activeSong)?.key||'G';activeSection=0;persist();render()};$('stageKey').onchange=e=>{stageKey=e.target.value;render()};document.querySelectorAll('[data-stage-section]').forEach(b=>b.onclick=()=>{if(!canEdit())return alert('Solo el líder puede seleccionar secciones.');activeSection=+b.dataset.stageSection;render()});if($('prevSection'))$('prevSection').onclick=()=>{if(!gate())return;activeSection=Math.max(0,activeSection-1);render()};if($('nextSection'))$('nextSection').onclick=()=>{if(!gate())return;activeSection++;render()};if($('toggleLeader'))$('toggleLeader').onclick=()=>{leaderMode=!leaderMode;render()}}
+function sendChat(){let input=$('chatInput'),text=input.value.trim();if(!text)return;chat.push({name:session.user.email,text,time:new Date().toLocaleTimeString('es-US',{hour:'2-digit',minute:'2-digit'})});persist();render();$('chatlog').scrollTop=$('chatlog').scrollHeight}
+$('loginBtn').onclick=login;$('password').onkeydown=e=>{if(e.key==='Enter')login()};$('logoutTop').onclick=logout;document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));restore();
 </script></body></html>
