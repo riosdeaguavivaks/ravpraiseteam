@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RAV Praise Team</title>
+<link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#17222b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RAV Praise Team">
+<style>
+:root{--bg:#17222b;--sf:#223240;--ln:#34495a;--tx:#eef2f4;--mt:#97a9b5;--ch:#ffb347;--ac:#4fc3b0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,sans-serif;padding:env(safe-area-inset-top) 0 calc(70px + env(safe-area-inset-bottom))}
+header{padding:14px 16px 4px;max-width:760px;margin:auto}h1{margin:0;font-size:22px}
+main{padding:8px 16px;max-width:760px;margin:auto}
+input,textarea{width:100%;padding:12px;margin:0 0 10px;border:1px solid var(--ln);border-radius:8px;background:var(--sf);color:var(--tx);font:inherit}
+button{padding:10px 14px;border:1px solid var(--ln);border-radius:8px;background:var(--sf);color:var(--tx);font:inherit}
+button.big{padding:16px 22px;font-size:1.1em}
+button.pri{background:var(--ch);color:#1a1a1a;border-color:var(--ch);font-weight:600;margin-bottom:10px}
+.row{display:flex;gap:10px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--ln)}
+.row b{flex:1}.row span{color:var(--mt)}.row em{font-style:normal;color:var(--ch);font-weight:700}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.bar span{color:var(--ch);font-weight:700;min-width:2em;text-align:center}
+.song{font-family:Georgia,serif;line-height:1.25;padding:8px 0}
+.ln{display:flex;flex-wrap:wrap;margin:.15em 0}.sg{display:inline-flex;flex-direction:column}
+.sg i{font:700 .8em system-ui,sans-serif;color:var(--ch);padding-right:.3em;min-height:1.2em}
+.sg b{font-weight:400;white-space:pre}
+.song h3{display:inline-block;margin:1.2em 0 .3em;padding:.2em .7em;border-radius:99px;font:700 .7em system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase;background:#2c4356;color:var(--ac)}
+.song h3.c{background:#4a3a1a;color:var(--ch)}.song h3.b{background:#1d4a45;color:#7fe0d1}.song h3.p{background:#3a2f55;color:#c4b2ff}
+.gap{height:.9em}.tags button{padding:8px 12px}
+.mt{color:var(--mt)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--sf);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;border-radius:0;background:none;padding:16px;color:var(--mt)}
+nav button.on{color:var(--ch);font-weight:700}
+.stage{background:#0e151b}.stage header,.stage nav{display:none}
+.chips button.on{border-color:var(--ac);color:var(--ac)}
+.sec{padding-bottom:100px}
+.pn{position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 16px;background:var(--bg);border-top:1px solid var(--ln)}
+.pn button{flex:1;padding:16px;margin:0}.pn span{color:var(--mt)}
+.stage .pn{bottom:env(safe-area-inset-bottom)}
+#toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--tx);color:#111;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%}
+#toast.on{opacity:1}
+</style></head><body>
+<header><h1 id="ttl">Cantos</h1></header>
+<main id="app"></main>
+<nav><button data-v="songs" onclick="go('songs')">Cantos</button><button data-v="set" onclick="go('set')">Setlist</button><button data-v="acct" onclick="go('acct')">Cuenta</button></nav>
+<div id="toast"></div>
+<script>
+const URL_='https://dprgngugbcosnbrnlore.supabase.co',KEY='sb_publishable_CPh0UNtcxQJ-xZNkhDU2Kg_6FYYcbsb';
+const $=s=>document.querySelector(s);
+const ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const sv=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nextSun=()=>{const d=new Date();d.setDate(d.getDate()+(7-d.getDay())%7);return d.toLocaleDateString('sv')};
+const fd=d=>new Date(d+'T12:00').toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
+let songs=ls('songs',[]),setl=ls('setl',{date:nextSun(),ids:[]}),auth=ls('auth',null),tr=ls('tr',{}),fs=ls('fs',20);
+let view='songs',curId=null,editId=null,q='',mode=ls('mode','full'),vi=0;
+const role=()=>{try{return JSON.parse(atob(auth.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).app_metadata?.role}catch{return null}};
+const lead=()=>!!auth&&role()==='leader';
+function msg(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(msg.t);msg.t=setTimeout(()=>e.classList.remove('on'),3000)}
+
+/* Supabase (REST, sin librerías para que todo funcione offline) */
+async function api(path,opt={}){
+  const r=await fetch(URL_+path,{...opt,headers:{apikey:KEY,'Content-Type':'application/json',Authorization:'Bearer '+(auth?auth.access_token:KEY),...opt.headers}});
+  if(!r.ok)throw new Error(r.status);
+  return r.json().catch(()=>null)}
+async function login(e,p){
+  const r=await fetch(URL_+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})});
+  const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Error');auth=j;sv('auth',auth)}
+async function refresh(){
+  if(!auth?.refresh_token)return;
+  const r=await fetch(URL_+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:auth.refresh_token})});
+  if(r.ok){auth=await r.json();sv('auth',auth)}else if(r.status==400||r.status==401){auth=null;sv('auth',null)}}
+const up={method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'}};
+async function push(s){const{pending,...o}=s;o.updated_at=new Date().toISOString();await api('/rest/v1/songs',{...up,body:JSON.stringify(o)});s.pending=false}
+async function pushSet(){await api('/rest/v1/setlists?on_conflict=service_date',{...up,body:JSON.stringify({service_date:setl.date,song_ids:setl.ids,updated_at:new Date().toISOString()})});setl.pending=false;sv('setl',setl)}
+async function sync(silent){
+  if(!auth){if(!silent)msg('Inicia sesión para sincronizar');return}
+  if(!silent)msg('Sincronizando…');
+  try{
+    await refresh();if(!auth)throw 0;
+    for(const s of songs.filter(x=>x.pending))await push(s);
+    if(setl.pending&&lead())await pushSet();
+    songs=await api('/rest/v1/songs?select=*&order=title');sv('songs',songs);
+    const r=await api('/rest/v1/setlists?select=*&order=service_date&limit=1&service_date=gte.'+new Date().toLocaleDateString('sv'));
+    if(r[0]&&!setl.pending){setl={date:r[0].service_date,ids:r[0].song_ids};sv('setl',setl)}
+    sv('last',new Date().toLocaleString('es'));
+    if(!silent)msg('Listo: '+songs.length+' cantos guardados en este dispositivo');render()
+  }catch(e){if(!silent)msg('No se pudo sincronizar. Revisa tu conexión o vuelve a iniciar sesión.')}}
+
+/* Transposición */
+const N=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'],M={Db:'C#','D#':'Eb',Gb:'F#','G#':'Ab','A#':'Bb',Cb:'B','E#':'F','B#':'C',Fb:'E'};
+const tc=(c,n)=>c.replace(/[A-G][b#]?/g,m=>{const i=N.indexOf(M[m]||m);return i<0?m:N[(i+n+120)%12]});
+const tk=t=>{t=t.toLowerCase();return /pre/.test(t)?'p':/coro|chorus/.test(t)?'c':/puente|bridge/.test(t)?'b':'v'};
+function lyr(b,n){if(typeof b!=='string')b=b.body;return b.split('\n').map(l=>{
+  if(l.startsWith('#')){const t=l.slice(1).trim();return`<h3 class="${tk(t)}">${esc(t)}</h3>`}
+  if(!l.trim())return'<div class="gap"></div>';
+  const p=l.split(/\[([^\]]+)\]/);let h='<div class="ln">';
+  if(p[0])h+=`<span class="sg"><i>&nbsp;</i><b>${esc(p[0])}</b></span>`;
+  for(let i=1;i<p.length;i+=2)h+=`<span class="sg"><i>${esc(tc(p[i],n))}</i><b>${esc(p[i+1]||'')||'&nbsp;'}</b></span>`;
+  return h+'</div>'}).join('')}
+
+/* Vistas */
+function lst(){const t=q.toLowerCase();
+  const a=songs.filter(s=>(s.title+' '+(s.author||'')+' '+s.key).toLowerCase().includes(t));
+  return a.length?a.map(s=>`<div class="row" onclick="openS('${s.id}')"><b>${esc(s.title)}</b><span>${esc(s.author||'')}</span><em>${esc(s.key)}</em></div>`).join(''):
+  `<p class="mt">${songs.length?'No hay cantos con esa búsqueda.':'Aún no hay cantos. Entra en Cuenta, inicia sesión y toca Sincronizar.'}</p>`}
+const vSongs=()=>`<input id="q" type="search" placeholder="Buscar canto, autor o tono" value="${esc(q)}" oninput="q=this.value;$('#lst').innerHTML=lst()">${lead()?'<button class="pri" onclick="edit()">Nuevo canto</button>':''}<div id="lst">${lst()}</div>`;
+function vSong(){const s=songs.find(x=>x.id==curId);if(!s){view='songs';return vSongs()}
+  const n=tr[s.id]||0,inn=setl.ids.includes(s.id),sc=secs(s.body),vm=mode=='verse';vi=Math.max(0,Math.min(vi,sc.length-1));
+  const bar=`<div class="bar"><button onclick="go('songs')">Volver</button><button onclick="tp(-1)">−1</button><span>${esc(tc(s.key,n))}</span><button onclick="tp(1)">+1</button><button onclick="fz(-2)">A−</button><button onclick="fz(2)">A+</button><button onclick="document.body.classList.toggle('stage')">Escenario</button><button onclick="sm()">${vm?'Completo':'Estrofas'}</button></div>`;
+  const ed=lead()?`<div class="bar"><button onclick="tog('${s.id}')">${inn?'Quitar del setlist':'Agregar al setlist'}</button><button onclick="edit('${s.id}')">Editar</button></div>`:'';
+  if(!vm)return bar+`<div class="song" style="font-size:${fs}px">${lyr(s,n)}</div>`+ed;
+  const nm=(x,i)=>x.startsWith('#')?x.split('\n')[0].slice(1).trim()||'Parte '+(i+1):'Parte '+(i+1);
+  return bar+`<div class="bar chips">${sc.map((x,i)=>`<button class="${i==vi?'on':''}" onclick="vj(${i})">${esc(nm(x,i))}</button>`).join('')}</div><div class="song sec" style="font-size:${fs+6}px">${lyr({body:sc[vi]},n)}</div>${ed}<div class="pn"><button onclick="vs(-1)">◀ Anterior</button><span>${vi+1}/${sc.length}</span><button class="pri" onclick="vs(1)">Siguiente ▶</button></div>`}
+function vSet(){const L=lead(),a=setl.ids.map(i=>songs.find(s=>s.id==i)).filter(Boolean);
+  return(L?`<input type="date" value="${setl.date}" onchange="setl.date=this.value;setl.pending=true;sv('setl',setl);render()">`:'')+
+  (a.length?a.map((s,i)=>`<div class="row"><b onclick="openS('${s.id}')">${i+1}. ${esc(s.title)}</b><em>${esc(tc(s.key,tr[s.id]||0))}</em>${L?`<button onclick="mv(${i},-1)">↑</button><button onclick="mv(${i},1)">↓</button><button onclick="rm(${i})">✕</button>`:''}</div>`).join(''):
+  `<p class="mt">El setlist está vacío.${L?' Abre un canto y toca Agregar al setlist.':''}</p>`)+
+  (L?'<p></p><button class="pri" onclick="saveSet()">Guardar setlist</button>':'')}
+const vAcct=()=>auth?`<p>${esc(auth.user?.email||'')}<br><span class="mt">Rol: ${lead()?'líder':'miembro'}</span></p><button class="pri" onclick="sync()">Sincronizar ahora</button> <button onclick="out()">Cerrar sesión</button><p class="mt">Última sincronización: ${esc(ls('last','nunca'))}</p>`:
+  `<input id="em" type="email" placeholder="Correo" autocomplete="username"><input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password"><button class="pri" onclick="doLogin()">Entrar</button>`;
+function vEdit(){const s=songs.find(x=>x.id==editId)||{title:'',author:'',key:'C',body:''};
+  return`<input id="et" placeholder="Título" value="${esc(s.title)}"><input id="ea" placeholder="Autor" value="${esc(s.author||'')}"><input id="ek" placeholder="Tono (ej. G)" value="${esc(s.key)}"><p class="mt">Toca un botón para marcar una parte donde tengas el cursor:</p><div class="bar tags">${['Intro','Verso','Pre-coro','Coro','Puente','Instrumental','Final'].map(t=>`<button type="button" onclick="ins('${t}')">${t}</button>`).join('')}</div><textarea id="eb" rows="16" placeholder="# Estrofa 1&#10;[G]Letra con [C]acordes">${esc(s.body)}</textarea><p class="mt">Escribe el acorde entre corchetes justo antes de la sílaba. Cada parte empieza con una línea como # Coro. Puedes cambiar el nombre a mano, por ejemplo # Verso 2.</p><div class="bar"><button class="pri" onclick="saveS()">Guardar canto</button>${s.id?'<button onclick="delS()">Eliminar</button>':''}<button onclick="go(\'songs\')">Cancelar</button></div>`}
+
+function render(){
+  const V={songs:vSongs,song:vSong,set:vSet,acct:vAcct,edit:vEdit};$('#app').innerHTML=V[view]();
+  const s=songs.find(x=>x.id==curId);
+  $('#ttl').textContent=({songs:'Cantos',set:'Setlist · '+fd(setl.date),acct:'Cuenta',edit:'Canto',song:s?s.title:''})[view];
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==(view=='song'||view=='edit'?'songs':view)))}
+function go(v){view=v;if(v!='song')document.body.classList.remove('stage');render();scrollTo(0,0)}
+const openS=id=>{curId=id;vi=0;go('song')};
+const edit=id=>{editId=id||null;go('edit')};
+function tp(d){tr[curId]=((tr[curId]||0)+d+12)%12;sv('tr',tr);render()}
+function secs(b){const L=b.split('\n'),h=L.some(l=>l.startsWith('#')),o=[];let c=[];const f=()=>{if(c.some(x=>x.trim()))o.push(c.join('\n'));c=[]};
+  for(const l of L){if(h){if(l.startsWith('#'))f();c.push(l)}else{if(!l.trim())f();else c.push(l)}}f();return o.length?o:[b]}
+function sm(){mode=mode=='verse'?'full':'verse';vi=0;sv('mode',mode);render()}
+function vj(i){vi=i;render();scrollTo(0,0)}
+function vs(d){const s=songs.find(x=>x.id==curId);if(!s)return;vi=Math.max(0,Math.min(secs(s.body).length-1,vi+d));render();scrollTo(0,0)}
+let tx=null;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{if(tx===null||view!='song'||mode!='verse')return;const d=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(d)>70)vs(d<0?1:-1)},{passive:true});
+document.addEventListener('keydown',e=>{if(view=='song'&&mode=='verse'){if(e.key=='ArrowRight')vs(1);if(e.key=='ArrowLeft')vs(-1)}});
+function ins(t){const e=$('#eb'),v=e.value,p=e.selectionStart??v.length;
+  const c=(v.match(new RegExp('^#\\s*'+t+'(\\s|$)','gim'))||[]).length,nm=t=='Verso'?'Verso '+(c+1):(c?t+' '+(c+1):t);
+  const pre=v.slice(0,p),post=v.slice(p),s=(!pre||pre.endsWith('\n\n')?'':pre.endsWith('\n')?'\n':'\n\n')+'# '+nm+'\n';
+  e.value=pre+s+post;e.focus();e.selectionStart=e.selectionEnd=pre.length+s.length}
+function fz(d){fs=Math.max(12,Math.min(48,fs+d));sv('fs',fs);render()}
+function chg(){setl.pending=true;sv('setl',setl);render()}
+function tog(id){if(setl.ids.includes(id))setl.ids=setl.ids.filter(x=>x!=id);else setl.ids.push(id);chg()}
+function mv(i,d){const j=i+d,a=setl.ids;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];chg()}
+function rm(i){setl.ids.splice(i,1);chg()}
+async function saveSet(){setl.pending=true;sv('setl',setl);
+  try{await refresh();await pushSet();msg('Setlist guardado')}catch{msg('Sin conexión: se enviará al sincronizar')}}
+async function saveS(){const t=$('#et').value.trim(),b=$('#eb').value;if(!t||!b.trim()){msg('Escribe el título y la letra');return}
+  let s=songs.find(x=>x.id==editId);if(!s){s={id:crypto.randomUUID()};songs.push(s)}
+  Object.assign(s,{title:t,author:$('#ea').value.trim(),key:$('#ek').value.trim()||'C',body:b,pending:true});sv('songs',songs);
+  try{await refresh();await push(s);sv('songs',songs);msg('Canto guardado')}catch{msg('Sin conexión: se enviará al sincronizar')}
+  go('songs')}
+async function delS(){if(!confirm('¿Eliminar este canto?'))return;
+  try{await refresh();await api('/rest/v1/songs?id=eq.'+editId,{method:'DELETE'});
+    songs=songs.filter(x=>x.id!=editId);setl.ids=setl.ids.filter(i=>i!=editId);sv('songs',songs);sv('setl',setl);go('songs')}
+  catch{msg('Necesitas conexión para eliminar')}}
+async function doLogin(){try{await login($('#em').value.trim(),$('#pw').value);await sync();location.hash=='#nuevo'&&lead()?edit():go('songs')}catch(e){msg('No se pudo entrar: '+e.message)}}
+function out(){auth=null;sv('auth',null);render()}
+
+if(location.hash=='#nuevo'){if(lead())view='edit';else view='acct'}
+render();if(location.hash=='#nuevo'&&!lead())msg('Inicia sesión como líder para agregar cantos');
+if(auth)sync(true);
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+</script></body></html>
