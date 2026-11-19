@@ -389,7 +389,7 @@ function ravLiveApply(row){
  activeSong=row.song_id||null;
  activeSection=Math.max(0,Number(row.section_index)||0);
  stageKey=row.song_key||'G';
- if(tab==='stage')render();if(document.getElementById('ravFullStage')?.classList.contains('open')){try{renderRavFullStage()}catch(e){console.warn(e)}}
+ if(tab==='stage')render();if(document.getElementById('ravFullStage')?.classList.contains('open')){try{ravPreviewSongId=null;updateRavFullStage(false);const target=document.getElementById('ravReaderSection'+activeSection);if(target){target.scrollIntoView({behavior:'auto',block:'start'});}}catch(e){console.warn('RAV full-screen live update:',e)}}
 }
 async function ravLivePoll(){
  if(!session||ravLiveBusy)return;
