@@ -289,7 +289,7 @@ document.getElementById('ravAddConfirm').onclick=async()=>{
 };
 let ravPreviewSongId=null;
 let ravFontSize=Number(localStorage.getItem('ravReaderFontSize')||32);
-function ravFullCurrent(){if(ravPreviewSongId){const song=songs.find(x=>x.id===ravPreviewSongId);return {p:null,items:[{songId:ravPreviewSongId,key:song?.key}],index:0,song}}const p=playlists.find(x=>x.id===activePlaylist),items=p?.items||[],index=Math.max(0,items.findIndex(x=>x.songId===activeSong)),it=items[index],song=songs.find(x=>x.id===it?.songId);return {p,items,index,song}}
+function ravFullCurrent(){if(ravPreviewSongId){const song=songs.find(x=>x.id===ravPreviewSongId),p=playlists.find(x=>x.id===activePlaylist),items=p?.items?.some(x=>x.songId===ravPreviewSongId)?p.items:[{songId:ravPreviewSongId,key:song?.key}],index=Math.max(0,items.findIndex(x=>x.songId===ravPreviewSongId));return {p,items,index,song}}const p=playlists.find(x=>x.id===activePlaylist),items=p?.items||[],index=Math.max(0,items.findIndex(x=>x.songId===activeSong)),it=items[index],song=songs.find(x=>x.id===it?.songId);return {p,items,index,song}}
 function ravSectionColor(part){const raw=String(part.color||'').trim();if(/^#[0-9a-f]{6}$/i.test(raw)&&raw.toLowerCase()!=='#ffffff')return raw;const type=String(part.type||'').toLowerCase();if(/coro|chorus/.test(type))return '#e5aa75';if(/puente|bridge/.test(type))return '#d4a1cf';if(/intro|instrument/.test(type))return '#a5cb8b';return '#8ac8d8'}
 function updateRavFullStage(scrollTop=true){const {song,items,index}=ravFullCurrent();if(!song){closeRavFullStage();return}const overlay=$('ravFullStage');overlay.style.setProperty('--rav-font',ravFontSize+'px');$('ravFsSizeLabel').textContent=(ravFontSize/32).toFixed(2).replace(/0$/,'')+'×';$('ravFsSong').textContent=song.title+' · '+stageKey;
 const sections=song.sections||[];
@@ -730,11 +730,11 @@ html body #auth .auth-card input#password:focus {
    const drift=activePlaylist!==desiredPlaylist||activeSong!==desiredSong||
      activeSection!==desiredSection||stageKey!==desiredKey||
      (open&&ravPreviewSongId!==null);
-   if(drift)ravLiveLast='';
+   if(drift && !(open && ravPreviewSongId))ravLiveLast='';
    previousApply(row);
    // When a full-screen reader was opened before the playlist arrived, it
    // needs another draw after the local library becomes available.
-   if(open&&document.getElementById('ravFullStage')?.classList.contains('open')&&desiredSong){
+   if(open&&document.getElementById('ravFullStage')?.classList.contains('open')&&desiredSong&&!ravPreviewSongId){
      const shown=document.getElementById('ravFsSong')?.textContent||'';
      const selected=songs.find(s=>String(s.id)===String(desiredSong));
      if(selected&&!shown.startsWith(selected.title+' · ')){
@@ -760,76 +760,42 @@ html body #auth .auth-card input#password:focus {
 })();
 </script>
 
-<script id="rav-live-song-id-repair-20261120">
-/* Preserve a real song UUID and publish changes made from every leader view. */
+<style id="rav-musician-landscape-style">
+@media (orientation:landscape) and (max-height:650px){
+ body.rav-musician-landscape #ravFullStage{position:fixed;inset:0;width:100vw;height:100dvh;z-index:999999;padding:5px 12px;background:#000}
+ body.rav-musician-landscape #ravFullStage .fs-header{font-size:12px;min-height:24px}
+ body.rav-musician-landscape #ravFullStage .fs-chips{padding:3px 0;gap:5px}
+ body.rav-musician-landscape #ravFullStage .fs-chip{height:30px;width:34px;font-size:10px}
+ body.rav-musician-landscape #ravFullStage .fs-controls{padding-top:3px}
+ body.rav-musician-landscape #ravFullStage .fs-controls button{min-height:34px;padding:5px 10px}
+ body.rav-musician-landscape #ravFullStage .fs-block{padding:8px 0}
+ body.rav-musician-landscape #ravFullStage .fs-section{margin-bottom:4px}
+ body.rav-musician-landscape #ravFullStage .fs-lyrics{line-height:1.22}
+}
+</style>
+<script id="rav-musician-landscape-preview-20261120">
 (function(){
- const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
- let lastSent='',busy=false,latest=null;
- function leader(){return !!session && typeof ravRoleReady!=='undefined' && ravRoleReady && role==='leader' && canEdit()}
- function state(){
-   if(!leader())return null;
-   const p=playlists.find(x=>String(x.id)===String(activePlaylist));
-   if(!p)return null;
-   const selector=document.getElementById('stageSong');
-   const selected=selector && selector.value && p.items.some(x=>String(x.songId)===selector.value)
-      ? selector.value : activeSong;
-   const item=p.items.find(x=>String(x.songId)===String(selected)) || p.items[0];
-   if(!item || !uuid.test(String(item.songId)))return null;
-   if(String(activeSong)!==String(item.songId)){activeSong=item.songId;activeSection=0;}
-   const value={playlist_id:p.id,song_id:item.songId,section_index:Math.max(0,Number(activeSection)||0),
-     song_key:stageKey||item.key||'G'};
-   return value;
+ let autoOpened=false;
+ const landscape=()=>window.matchMedia('(orientation: landscape) and (max-height: 650px)').matches;
+ const musician=()=>!!session && typeof ravRoleReady!=='undefined' && ravRoleReady && role==='monitor';
+ function syncOrientation(){
+   const should=musician() && landscape();
+   document.body.classList.toggle('rav-musician-landscape',should);
+   const stage=document.getElementById('ravFullStage');
+   if(should && activeSong && !stage.classList.contains('open')){
+     autoOpened=true;
+     openRavFullStage();
+   }else if(!should && autoOpened){
+     autoOpened=false;
+     if(stage.classList.contains('open'))closeRavFullStage();
+   }
  }
- async function drain(){
-   if(busy)return;
-   busy=true;
-   try{
-     while(latest){
-       const value=latest;latest=null;
-       const signature=JSON.stringify(value);
-       if(signature===lastSent)continue;
-       try{
-         const result=await db('rav_live_state','PATCH','?id=eq.main', {...value,updated_at:new Date().toISOString()});
-         lastSent=signature;
-       }catch(e){
-         console.error('RAV live song synchronization:',e);
-         const status=document.getElementById('ravLiveStatus');
-         if(status)status.textContent='No se pudo sincronizar: '+e.message;
-       }
-     }
-   }finally{busy=false}
- }
- function send(){
-   const value=state();
-   if(!value)return;
-   const signature=JSON.stringify(value);
-   if(signature===lastSent && !latest)return;
-   latest=value;
-   void drain();
- }
- // Replace the earlier publisher so it cannot overwrite a valid song with NULL.
- ravLivePublish=send;
- // Capture selections from both normal and full-screen leader controls.
- document.addEventListener('change',e=>{
-   if(!leader())return;
-   if(e.target?.id==='stageSong'||e.target?.id==='stagePlaylist'||e.target?.id==='stageKey')
-      queueMicrotask(send);
- },true);
- document.addEventListener('click',e=>{
-   if(!leader())return;
-   if(e.target?.closest?.('[data-stage-section],#prevSection,#nextSection,[id^="ravReader"]'))
-      queueMicrotask(send);
- },true);
- // A state watcher also catches changes made by other app functions.
- let observed='';
- setInterval(()=>{
-   if(!leader()){observed='';return}
-   const value=state();
-   if(!value)return;
-   const signature=JSON.stringify(value);
-   if(signature!==observed){observed=signature;send()}
- },650);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){lastSent='';send()}});
+ window.addEventListener('orientationchange',()=>setTimeout(syncOrientation,150));
+ window.addEventListener('resize',syncOrientation);
+ const originalClose=closeRavFullStage;
+ closeRavFullStage=function(){autoOpened=false;document.body.classList.remove('rav-musician-landscape');return originalClose()};
+ // A short check also covers role selection or a playlist arriving after rotation.
+ setInterval(syncOrientation,1200);
 })();
 </script>
 </body></html>
