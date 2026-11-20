@@ -759,4 +759,77 @@ html body #auth .auth-card input#password:focus {
  };
 })();
 </script>
+
+<script id="rav-live-song-id-repair-20261120">
+/* Preserve a real song UUID and publish changes made from every leader view. */
+(function(){
+ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+ let lastSent='',busy=false,latest=null;
+ function leader(){return !!session && typeof ravRoleReady!=='undefined' && ravRoleReady && role==='leader' && canEdit()}
+ function state(){
+   if(!leader())return null;
+   const p=playlists.find(x=>String(x.id)===String(activePlaylist));
+   if(!p)return null;
+   const selector=document.getElementById('stageSong');
+   const selected=selector && selector.value && p.items.some(x=>String(x.songId)===selector.value)
+      ? selector.value : activeSong;
+   const item=p.items.find(x=>String(x.songId)===String(selected)) || p.items[0];
+   if(!item || !uuid.test(String(item.songId)))return null;
+   if(String(activeSong)!==String(item.songId)){activeSong=item.songId;activeSection=0;}
+   const value={playlist_id:p.id,song_id:item.songId,section_index:Math.max(0,Number(activeSection)||0),
+     song_key:stageKey||item.key||'G'};
+   return value;
+ }
+ async function drain(){
+   if(busy)return;
+   busy=true;
+   try{
+     while(latest){
+       const value=latest;latest=null;
+       const signature=JSON.stringify(value);
+       if(signature===lastSent)continue;
+       try{
+         const result=await db('rav_live_state','PATCH','?id=eq.main', {...value,updated_at:new Date().toISOString()});
+         lastSent=signature;
+       }catch(e){
+         console.error('RAV live song synchronization:',e);
+         const status=document.getElementById('ravLiveStatus');
+         if(status)status.textContent='No se pudo sincronizar: '+e.message;
+       }
+     }
+   }finally{busy=false}
+ }
+ function send(){
+   const value=state();
+   if(!value)return;
+   const signature=JSON.stringify(value);
+   if(signature===lastSent && !latest)return;
+   latest=value;
+   void drain();
+ }
+ // Replace the earlier publisher so it cannot overwrite a valid song with NULL.
+ ravLivePublish=send;
+ // Capture selections from both normal and full-screen leader controls.
+ document.addEventListener('change',e=>{
+   if(!leader())return;
+   if(e.target?.id==='stageSong'||e.target?.id==='stagePlaylist'||e.target?.id==='stageKey')
+      queueMicrotask(send);
+ },true);
+ document.addEventListener('click',e=>{
+   if(!leader())return;
+   if(e.target?.closest?.('[data-stage-section],#prevSection,#nextSection,[id^="ravReader"]'))
+      queueMicrotask(send);
+ },true);
+ // A state watcher also catches changes made by other app functions.
+ let observed='';
+ setInterval(()=>{
+   if(!leader()){observed='';return}
+   const value=state();
+   if(!value)return;
+   const signature=JSON.stringify(value);
+   if(signature!==observed){observed=signature;send()}
+ },650);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){lastSent='';send()}});
+})();
+</script>
 </body></html>
