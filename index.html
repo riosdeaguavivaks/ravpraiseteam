@@ -955,6 +955,37 @@ html body #auth .auth-card input#password:focus {
 })();
 </script>
 
+<style id="rav-fullscreen-iphone-width-fix">
+/* El lector debe cubrir el viewport, incluso después de girar el iPhone. */
+html,body{max-width:100%;overflow-x:clip}
+#ravFullStage,
+body.rav-musician-landscape #ravFullStage{
+  position:fixed!important;
+  left:0!important;right:0!important;top:0!important;bottom:0!important;
+  width:auto!important;max-width:none!important;
+  min-width:0!important;box-sizing:border-box!important;
+  background:#000!important;
+}
+#ravFullStage .fs-content,
+#ravFullStage .fs-block{min-width:0!important;max-width:100%!important}
+#ravFullStage .rav-mixed{max-width:100%;overflow-x:auto}
+</style>
+<script id="rav-fullscreen-iphone-viewport-reflow">
+(function(){
+  function reflow(){
+    const stage=document.getElementById('ravFullStage');
+    if(!stage||!stage.classList.contains('open'))return;
+    // Se evita conservar medidas antiguas al girar entre horizontal y vertical.
+    stage.style.removeProperty('width');
+    stage.style.removeProperty('max-width');
+    void stage.offsetWidth;
+  }
+  window.addEventListener('resize',reflow,{passive:true});
+  window.addEventListener('orientationchange',reflow,{passive:true});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',reflow,{passive:true});
+})();
+</script>
+
 <script id="rav-sync-diagnostic-temporary-20261121">
 /* DIAGNÓSTICO TEMPORAL: observación solamente. No altera lecturas, escrituras ni estados. */
 (function(){
@@ -1008,6 +1039,52 @@ html body #auth .auth-card input#password:focus {
         ' | app '+(shown?.title||String(activeSong||'NULL').slice(0,8))+' / sec '+activeSection;
     }catch(e){bar.textContent='DIAG error local: '+String(e?.message||e)}
   },700);
+})();
+</script>
+
+<script id="rav-screen-awake-20261121">
+/* Mantiene la pantalla activa durante Setlist / lector, cuando el navegador lo permite. */
+(function(){
+  let wake=null, pending=false;
+  function shouldStayAwake(){
+    return !!session && !document.getElementById('app')?.classList.contains('hidden') &&
+      (tab==='stage' || !!document.getElementById('ravFullStage')?.classList.contains('open'));
+  }
+  async function release(){
+    const old=wake; wake=null;
+    if(old){try{await old.release()}catch(_){}}
+  }
+  async function syncWake(){
+    if(!shouldStayAwake() || document.visibilityState!=='visible'){
+      await release();return;
+    }
+    if(wake || pending || !('wakeLock' in navigator))return;
+    pending=true;
+    try{
+      const lock=await navigator.wakeLock.request('screen');
+      if(!shouldStayAwake() || document.visibilityState!=='visible'){
+        await lock.release();
+      }else{
+        wake=lock;
+        lock.addEventListener('release',()=>{if(wake===lock)wake=null},{once:true});
+      }
+    }catch(_){/* iOS puede rechazarlo por restricciones de energía, navegador o permisos. */}
+    finally{pending=false}
+  }
+  const previousSwitch=switchTab;
+  switchTab=function(){const result=previousSwitch.apply(this,arguments);void syncWake();return result};
+  const previousOpen=openRavFullStage;
+  openRavFullStage=function(){const result=previousOpen.apply(this,arguments);void syncWake();return result};
+  const previousClose=closeRavFullStage;
+  closeRavFullStage=function(){const result=previousClose.apply(this,arguments);void syncWake();return result};
+  const previousLogout=logout;
+  logout=function(){void release();return previousLogout.apply(this,arguments)};
+  document.addEventListener('visibilitychange',()=>{void syncWake()});
+  document.addEventListener('fullscreenchange',()=>{void syncWake()});
+  // Una pulsación dentro del Setlist permite reintentar si iOS exigió interacción.
+  document.addEventListener('pointerdown',()=>{if(shouldStayAwake()&&!wake)void syncWake()},{passive:true});
+  window.addEventListener('pagehide',()=>{void release()});
+  void syncWake();
 })();
 </script>
 </body></html>
