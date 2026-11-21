@@ -954,4 +954,60 @@ html body #auth .auth-card input#password:focus {
  setInterval(syncOrientation,1200);
 })();
 </script>
+
+<script id="rav-sync-diagnostic-temporary-20261121">
+/* DIAGNÓSTICO TEMPORAL: observación solamente. No altera lecturas, escrituras ni estados. */
+(function(){
+  const bar=document.createElement('div');
+  bar.id='ravSyncDiagnostic';
+  bar.setAttribute('role','status');
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#850c12;color:white;font:11px/1.35 ui-monospace,monospace;padding:calc(4px + env(safe-area-inset-top)) 7px 5px;pointer-events:none;overflow-wrap:anywhere;max-height:74px;overflow:hidden';
+  document.body.appendChild(bar);
+  let reads=0, ok='—', err='—', row='—', applied=0, lastApply='—', stageUpdates=0;
+  const originalDb=db;
+  db=async function(table,method,query,body){
+    const isRead=table==='rav_live_state' && (!method||method==='GET');
+    try{
+      const result=await originalDb.apply(this,arguments);
+      if(isRead){
+        reads++;
+        ok=new Date().toLocaleTimeString();
+        err='—';
+        const record=Array.isArray(result)?result[0]:result;
+        row=record ? String(record.song_id||'NULL').slice(0,8)+' / sec '+record.section_index : 'sin fila';
+      }
+      return result;
+    }catch(e){
+      if(isRead){reads++;err=String(e?.message||e).slice(0,80)}
+      throw e;
+    }
+  };
+  const originalApply=ravLiveApply;
+  ravLiveApply=function(record){
+    applied++;
+    lastApply=record ? String(record.song_id||'NULL').slice(0,8)+' / sec '+record.section_index : 'sin fila';
+    return originalApply.apply(this,arguments);
+  };
+  const originalStage=updateRavFullStage;
+  updateRavFullStage=function(){
+    stageUpdates++;
+    return originalStage.apply(this,arguments);
+  };
+  setInterval(function(){
+    try{
+      const song=songs.find(x=>String(x.id)===String(activeSong));
+      const shown=ravPreviewSongId ? songs.find(x=>String(x.id)===String(ravPreviewSongId)) : song;
+      const opened=document.getElementById('ravFullStage')?.classList.contains('open');
+      bar.textContent='DIAG | rol '+role+'/'+(ravRoleReady?'listo':'pendiente')+
+        ' | vista previa '+(ravPreviewSongId?'SÍ':'NO')+
+        ' | completa '+(opened?'SÍ':'NO')+
+        ' | BD '+row+' | lecturas '+reads+' @'+ok+
+        ' | error '+err+
+        ' | recibido '+applied+' ('+lastApply+')'+
+        ' | dibujado '+stageUpdates+
+        ' | app '+(shown?.title||String(activeSong||'NULL').slice(0,8))+' / sec '+activeSection;
+    }catch(e){bar.textContent='DIAG error local: '+String(e?.message||e)}
+  },700);
+})();
+</script>
 </body></html>
