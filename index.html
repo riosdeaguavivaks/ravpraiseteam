@@ -426,7 +426,7 @@ const readerSection=ravPreviewSongId!==null?ravPreviewSection:activeSection;
 $('ravFsChips').innerHTML=sections.map((part,i)=>`<button class="fs-chip ${i===readerSection?'current':''}" style="--chip:${esc(ravSectionColor(part))}" data-fs-section="${i}" title="${esc(part.type||'Sección')}" aria-label="Ir a ${esc(part.type||'Sección')}">${esc((part.type||'S'+(i+1)).replace(/Estrofa/i,'V').replace(/Verso/i,'V').replace(/Coro/i,'C').replace(/Puente/i,'P').replace(/Intro/i,'IN').slice(0,4))}</button>`).join('');
 $('ravFsScroll').innerHTML=sections.map((part,i)=>`<section class="fs-block" id="ravReaderSection${i}"><div class="fs-section" style="color:${esc(ravSectionColor(part))}">${esc(part.type||'Sección')}</div>${part.chords?`<div class="fs-chords">${esc(transpose(part.chords,song.key,stageKey))}</div>`:''}${!part.chords&&String(part.lyrics||'').split('\n').some(ravIsChordLine)?ravMixedHtml(part.lyrics,song.key,stageKey):`<div class="fs-lyrics">${esc(part.lyrics||'Instrumental')}</div>`}</section>`).join('');
 $('ravFsPrev').disabled=index===0;$('ravFsNext').disabled=index>=items.length-1;$('ravFsBackLive').classList.toggle('hidden',!ravLiveFollowing()||!ravPreviewSongId);
-document.querySelectorAll('[data-fs-section]').forEach(btn=>btn.onclick=()=>{if(ravPreviewSongId!==null)ravPreviewSection=Number(btn.dataset.fsSection);else if(ravLiveFollowing())return;else activeSection=Number(btn.dataset.fsSection);document.querySelectorAll('.fs-chip').forEach(b=>b.classList.toggle('current',b===btn));$('ravReaderSection'+(ravPreviewSongId!==null?ravPreviewSection:activeSection))?.scrollIntoView({behavior:'smooth',block:'start'})});
+document.querySelectorAll('[data-fs-section]').forEach(btn=>btn.onclick=()=>{if(ravPreviewSongId!==null)ravPreviewSection=Number(btn.dataset.fsSection);else if(ravLiveFollowing())return;else {activeSection=Number(btn.dataset.fsSection);if(role==='leader'&&canEdit())ravLivePublish();}document.querySelectorAll('.fs-chip').forEach(b=>b.classList.toggle('current',b===btn));$('ravReaderSection'+(ravPreviewSongId!==null?ravPreviewSection:activeSection))?.scrollIntoView({behavior:'smooth',block:'start'})});
 if(scrollTop)$('ravFsScroll').scrollTop=0;
 }
 function openRavSongPreview(id){const song=songs.find(x=>x.id===id);if(!song)return;ravPreviewSongId=id;ravPreviewSection=0;if(!ravLiveFollowing()){stageKey=song.key||'G';activeSection=0;}openRavFullStage()}
@@ -438,7 +438,7 @@ function ravReaderChangeSong(delta){
    ravPreviewSongId=next.songId;ravPreviewSection=0;
    updateRavFullStage();return;
  }
- activeSong=next.songId;stageKey=next.key||songs.find(s=>s.id===next.songId)?.key||'G';activeSection=0;persist();updateRavFullStage();
+ activeSong=next.songId;stageKey=next.key||songs.find(s=>s.id===next.songId)?.key||'G';activeSection=0;persist();if(role==='leader'&&canEdit())ravLivePublish();updateRavFullStage();
 }
 $('ravFsClose').onclick=closeRavFullStage;
 $('ravFsPrev').onclick=()=>ravReaderChangeSong(-1);
