@@ -1126,4 +1126,52 @@ body:not(.rav-monitor-kiosk) #ravFsNextTitle{display:none!important}
  kiosk();
 })();
 </script>
+
+<script id="rav-live-follow-reliability-20261121">
+/* Synchronization safeguard for both ordinary and full-screen leader controls.
+   Monitor preview remains local until "Volver al Líder" is pressed. */
+(function(){
+  const isLeader=()=>!!session&&ravRoleReady&&role==='leader'&&canEdit();
+  const isFollower=()=>!!session&&ravRoleReady&&(role==='monitor'||role==='audiovisual');
+  const signature=()=>JSON.stringify([activePlaylist||null,activeSong||null,Number(activeSection)||0,stageKey||'G']);
+  let lastLeaderSignature=null, lastMonitorSignature=null, publishing=false;
+  // Observe the actual leader state, including changes made inside fullscreen,
+  // instead of relying solely on click/change listeners.
+  setInterval(function(){
+    if(!isLeader()){lastLeaderSignature=null;return}
+    const current=signature();
+    if(current===lastLeaderSignature||publishing)return;
+    lastLeaderSignature=current;
+    publishing=true;
+    ravLivePublish();
+    Promise.resolve(ravLiveWriteQueue).finally(()=>{publishing=false});
+  },700);
+  // Keep the reader current even when it is rendered as an iPad/iPhone kiosk.
+  const priorApply=ravLiveApply;
+  ravLiveApply=function(row){
+    if(!row||!isFollower())return priorApply.apply(this,arguments);
+    const before=signature();
+    const result=priorApply.apply(this,arguments);
+    const after=signature();
+    if(before!==after){
+      lastMonitorSignature=after;
+      if(ravPreviewSongId===null){
+        const stage=document.getElementById('ravFullStage');
+        if(stage&&stage.classList.contains('open')){
+          try{
+            updateRavFullStage(false);
+            const scroller=document.getElementById('ravFsScroll');
+            const section=document.getElementById('ravReaderSection'+activeSection);
+            if(scroller&&section)scroller.scrollTop=Math.max(0,section.offsetTop-scroller.offsetTop);
+          }catch(error){console.warn('RAV monitor refresh',error)}
+        }
+      }
+    }
+    return result;
+  };
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden&&isFollower())ravLivePoll();
+  });
+})();
+</script>
 </body></html>
