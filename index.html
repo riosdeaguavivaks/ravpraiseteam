@@ -432,7 +432,14 @@ if(scrollTop)$('ravFsScroll').scrollTop=0;
 function openRavSongPreview(id){const song=songs.find(x=>x.id===id);if(!song)return;ravPreviewSongId=id;ravPreviewSection=0;if(!ravLiveFollowing()){stageKey=song.key||'G';activeSection=0;}openRavFullStage()}
 function openRavFullStage(){const el=$('ravFullStage');el.classList.add('open');updateRavFullStage();if(ravLiveFollowing() && ravPreviewSongId===null){const scroller=$('ravFsScroll'),target=$('ravReaderSection'+activeSection);if(scroller&&target)scroller.scrollTop=Math.max(0,target.offsetTop-scroller.offsetTop);ravLivePoll();}el.requestFullscreen?.().catch(()=>{});}
 function closeRavFullStage(){if(document.fullscreenElement===$('ravFullStage'))document.exitFullscreen?.().catch(()=>{});$('ravFullStage').classList.remove('open');ravPreviewSongId=null}
-function ravReaderChangeSong(delta){const {items,index}=ravFullCurrent();const next=items[index+delta];if(!next)return;activeSong=next.songId;stageKey=next.key||songs.find(s=>s.id===next.songId)?.key||'G';activeSection=0;persist();updateRavFullStage()}
+function ravReaderChangeSong(delta){
+ const {items,index}=ravFullCurrent();const next=items[index+delta];if(!next)return;
+ if(ravLiveFollowing()){
+   ravPreviewSongId=next.songId;ravPreviewSection=0;
+   updateRavFullStage();return;
+ }
+ activeSong=next.songId;stageKey=next.key||songs.find(s=>s.id===next.songId)?.key||'G';activeSection=0;persist();updateRavFullStage();
+}
 $('ravFsClose').onclick=closeRavFullStage;
 $('ravFsPrev').onclick=()=>ravReaderChangeSong(-1);
 $('ravFsNext').onclick=()=>ravReaderChangeSong(1);
@@ -929,31 +936,7 @@ html body #auth .auth-card input#password:focus {
  body.rav-musician-landscape #ravFullStage .fs-section{font-size:12px;margin-bottom:3px}
 }
 </style>
-<script id="rav-musician-landscape-preview-20261120">
-(function(){
- let autoOpened=false;
- const landscape=()=>window.matchMedia('(orientation: landscape) and (max-height: 650px)').matches;
- const musician=()=>!!session && typeof ravRoleReady!=='undefined' && ravRoleReady && role==='monitor';
- function syncOrientation(){
-   const should=musician() && landscape();
-   document.body.classList.toggle('rav-musician-landscape',should);
-   const stage=document.getElementById('ravFullStage');
-   if(should && activeSong && !stage.classList.contains('open')){
-     autoOpened=true;
-     openRavFullStage();
-   }else if(!should && autoOpened){
-     autoOpened=false;
-     if(stage.classList.contains('open'))closeRavFullStage();
-   }
- }
- window.addEventListener('orientationchange',()=>setTimeout(syncOrientation,150));
- window.addEventListener('resize',syncOrientation);
- const originalClose=closeRavFullStage;
- closeRavFullStage=function(){autoOpened=false;document.body.classList.remove('rav-musician-landscape');return originalClose()};
- // A short check also covers role selection or a playlist arriving after rotation.
- setInterval(syncOrientation,1200);
-})();
-</script>
+
 
 <style id="rav-fullscreen-iphone-width-fix">
 /* El lector debe cubrir el viewport, incluso después de girar el iPhone. */
@@ -1085,6 +1068,62 @@ body.rav-musician-landscape #ravFullStage{
   document.addEventListener('pointerdown',()=>{if(shouldStayAwake()&&!wake)void syncWake()},{passive:true});
   window.addEventListener('pagehide',()=>{void release()});
   void syncWake();
+})();
+</script>
+
+<style id="rav-monitor-kiosk-20261121">
+/* Monitor: lector permanente, sin menú; los demás roles conservan su interfaz. */
+body.rav-monitor-kiosk #ravFullStage{display:flex!important;position:fixed!important;inset:0!important;width:auto!important;height:100dvh!important;max-width:none!important;z-index:10000!important;background:#000!important;box-sizing:border-box!important}
+body.rav-monitor-kiosk #ravFsClose{display:none!important}
+body.rav-monitor-kiosk #ravSyncDiagnostic{display:none!important}
+body.rav-monitor-kiosk #ravFullStage .fs-content{min-width:0;max-width:100%;width:100%;flex:1;overflow:auto}
+body.rav-monitor-kiosk #ravFullStage .fs-controls{flex-wrap:nowrap;gap:5px}
+body.rav-monitor-kiosk #ravFullStage .fs-controls button{font-size:clamp(10px,1.9vw,13px);padding:5px 7px;min-height:36px}
+body.rav-monitor-kiosk #ravFullStage .fs-size{gap:3px}
+body.rav-monitor-kiosk #ravFullStage .fs-size button{min-width:32px}
+body.rav-monitor-kiosk #ravFullStage .fs-header{min-width:0}
+body.rav-monitor-kiosk #ravFsSong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ravFsNextTitle{font-size:clamp(10px,1.7vw,12px);color:#b4b4b4;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:0;line-height:1.15;padding:1px 2px 0}
+body:not(.rav-monitor-kiosk) #ravFsNextTitle{display:none!important}
+@media(max-height:500px){body.rav-monitor-kiosk #ravFullStage{padding:4px 9px!important}body.rav-monitor-kiosk #ravFullStage .fs-chips{padding:3px 0}body.rav-monitor-kiosk #ravFullStage .fs-controls{padding-top:3px}body.rav-monitor-kiosk #ravFullStage .fs-block{padding:8px 0 12px}}
+</style>
+<script id="rav-monitor-kiosk-20261121">
+(function(){
+ const $id=id=>document.getElementById(id);
+ const isMonitor=()=>!!session && typeof ravRoleReady!=='undefined' && ravRoleReady && role==='monitor';
+ const originalUpdate=updateRavFullStage;
+ updateRavFullStage=function(...args){
+   const preview=isMonitor() && ravPreviewSongId!==null;
+   const oldKey=stageKey;
+   if(preview){const item=ravFullCurrent().items.find(x=>String(x.songId)===String(ravPreviewSongId));stageKey=item?.key||songs.find(x=>String(x.id)===String(ravPreviewSongId))?.key||oldKey;}
+   try{return originalUpdate.apply(this,args)}finally{if(preview)stageKey=oldKey;updateNextTitle();}
+ };
+ function updateNextTitle(){
+   const el=$id('ravFsNextTitle');if(!el)return;
+   const {items,index}=ravFullCurrent();const next=items[index+1];
+   const title=next?songs.find(x=>String(x.id)===String(next.songId))?.title:null;
+   el.textContent=(ravPrefs?.language==='en'?'Next: ':'Siguiente: ')+(title||'—');
+ }
+ function kiosk(){
+   const enabled=isMonitor();
+   document.body.classList.toggle('rav-monitor-kiosk',enabled);
+   if(!enabled)return;
+   const stage=$id('ravFullStage');if(!stage)return;
+   if(!stage.classList.contains('open'))stage.classList.add('open');
+   if(activeSong && songs.some(x=>String(x.id)===String(activeSong))){
+     const title=$id('ravFsSong');
+     if(!title?.textContent || title.textContent==='undefined')updateRavFullStage();
+   }
+   updateNextTitle();
+ }
+ // La vista completa CSS no depende de requestFullscreen(), restringido por iOS sin gesto del usuario.
+ const controls=$id('ravFullStage')?.querySelector('.fs-controls');
+ if(controls){const label=document.createElement('div');label.id='ravFsNextTitle';controls.parentNode.insertBefore(label,controls);}
+ // El botón ya existente de regreso al líder sigue siendo funcional y solo aparece en vista previa.
+ setInterval(kiosk,850);
+ window.addEventListener('resize',kiosk,{passive:true});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)kiosk()});
+ kiosk();
 })();
 </script>
 </body></html>
