@@ -426,13 +426,14 @@ const readerSection=ravPreviewSongId!==null?ravPreviewSection:activeSection;
 $('ravFsChips').innerHTML=sections.map((part,i)=>`<button class="fs-chip ${i===readerSection?'current':''}" style="--chip:${esc(ravSectionColor(part))}" data-fs-section="${i}" title="${esc(part.type||'Sección')}" aria-label="Ir a ${esc(part.type||'Sección')}">${esc((part.type||'S'+(i+1)).replace(/Estrofa/i,'V').replace(/Verso/i,'V').replace(/Coro/i,'C').replace(/Puente/i,'P').replace(/Intro/i,'IN').slice(0,4))}</button>`).join('');
 $('ravFsScroll').innerHTML=sections.map((part,i)=>`<section class="fs-block" id="ravReaderSection${i}"><div class="fs-section" style="color:${esc(ravSectionColor(part))}">${esc(part.type||'Sección')}</div>${part.chords?`<div class="fs-chords">${esc(transpose(part.chords,song.key,stageKey))}</div>`:''}${!part.chords&&String(part.lyrics||'').split('\n').some(ravIsChordLine)?ravMixedHtml(part.lyrics,song.key,stageKey):`<div class="fs-lyrics">${esc(part.lyrics||'Instrumental')}</div>`}</section>`).join('');
 $('ravFsPrev').disabled=index===0;$('ravFsNext').disabled=index>=items.length-1;$('ravFsBackLive').classList.toggle('hidden',!ravLiveFollowing()||!ravPreviewSongId);
-document.querySelectorAll('[data-fs-section]').forEach(btn=>btn.onclick=()=>{if(ravPreviewSongId!==null)ravPreviewSection=Number(btn.dataset.fsSection);else if(ravLiveFollowing())return;else {activeSection=Number(btn.dataset.fsSection);if(role==='leader'&&canEdit())ravLivePublish();}document.querySelectorAll('.fs-chip').forEach(b=>b.classList.toggle('current',b===btn));$('ravReaderSection'+(ravPreviewSongId!==null?ravPreviewSection:activeSection))?.scrollIntoView({behavior:'smooth',block:'start'})});
+document.querySelectorAll('[data-fs-section]').forEach(btn=>btn.onclick=()=>{if(role==='leader'&&canEdit()&&ravPreviewSongId!==null){const p=playlists.find(x=>String(x.id)===String(activePlaylist));if(p?.items?.some(x=>String(x.songId)===String(ravPreviewSongId))){activeSong=ravPreviewSongId;ravPreviewSongId=null;}}if(ravPreviewSongId!==null)ravPreviewSection=Number(btn.dataset.fsSection);else if(ravLiveFollowing())return;else {activeSection=Number(btn.dataset.fsSection);if(role==='leader'&&canEdit())ravLivePublish();}document.querySelectorAll('.fs-chip').forEach(b=>b.classList.toggle('current',b===btn));$('ravReaderSection'+(ravPreviewSongId!==null?ravPreviewSection:activeSection))?.scrollIntoView({behavior:'smooth',block:'start'})});
 if(scrollTop)$('ravFsScroll').scrollTop=0;
 }
-function openRavSongPreview(id){const song=songs.find(x=>x.id===id);if(!song)return;ravPreviewSongId=id;ravPreviewSection=0;if(!ravLiveFollowing()){stageKey=song.key||'G';activeSection=0;}openRavFullStage()}
+function openRavSongPreview(id){const song=songs.find(x=>x.id===id);if(!song)return;const p=playlists.find(x=>String(x.id)===String(activePlaylist));const liveItem=role==='leader'&&canEdit()?p?.items?.find(x=>String(x.songId)===String(id)):null;if(liveItem){ravPreviewSongId=null;activeSong=id;activeSection=0;stageKey=liveItem.key||song.key||'G';persist();ravLivePublish();}else{ravPreviewSongId=id;ravPreviewSection=0;if(!ravLiveFollowing()){stageKey=song.key||'G';activeSection=0;}}openRavFullStage()}
 function openRavFullStage(){const el=$('ravFullStage');el.classList.add('open');updateRavFullStage();if(ravLiveFollowing() && ravPreviewSongId===null){const scroller=$('ravFsScroll'),target=$('ravReaderSection'+activeSection);if(scroller&&target)scroller.scrollTop=Math.max(0,target.offsetTop-scroller.offsetTop);ravLivePoll();}el.requestFullscreen?.().catch(()=>{});}
 function closeRavFullStage(){if(document.fullscreenElement===$('ravFullStage'))document.exitFullscreen?.().catch(()=>{});$('ravFullStage').classList.remove('open');ravPreviewSongId=null}
 function ravReaderChangeSong(delta){
+ if(role==='leader'&&ravPreviewSongId!==null){const p=playlists.find(x=>String(x.id)===String(activePlaylist));if(p?.items?.some(x=>String(x.songId)===String(ravPreviewSongId))){activeSong=ravPreviewSongId;ravPreviewSongId=null;}}
  const {items,index}=ravFullCurrent();const next=items[index+delta];if(!next)return;
  if(ravLiveFollowing()){
    ravPreviewSongId=next.songId;ravPreviewSection=0;
@@ -1172,6 +1173,99 @@ body:not(.rav-monitor-kiosk) #ravFsNextTitle{display:none!important}
   document.addEventListener('visibilitychange',function(){
     if(!document.hidden&&isFollower())ravLivePoll();
   });
+})();
+</script>
+<style id="rav-musician-scroll-toggle-style">
+#ravMusicianScrollToggle{display:none;align-items:center;justify-content:center;flex:0 0 28px;width:28px;height:28px;min-width:28px!important;min-height:28px!important;padding:2px!important;background:transparent!important;border:0!important;border-radius:5px;color:#aeb4be;opacity:.7;box-shadow:none!important}
+#ravMusicianScrollToggle svg{width:20px;height:20px;display:block}
+#ravMusicianScrollToggle .rav-slash{display:none}
+#ravMusicianScrollToggle[aria-pressed="false"] .rav-slash{display:block}
+#ravMusicianScrollToggle:focus-visible{outline:1px solid #aeb4be}
+body.rav-musician-scroll #ravMusicianScrollToggle{display:inline-flex}
+</style>
+<script id="rav-musician-scroll-sync-20261124">
+/* Only musicians choose whether to follow leader scroll. Audiovisual unchanged.
+   Requires public.rav_live_state.scroll_ratio (see accompanying SQL). */
+(function(){
+ const $id=id=>document.getElementById(id);
+ const musician=()=>!!session&&ravRoleReady&&role==='monitor';
+ const leader=()=>!!session&&ravRoleReady&&role==='leader'&&canEdit();
+ const scroller=()=>$id('ravFsScroll');
+ const stage=()=>$id('ravFullStage');
+ const ratio=el=>el?Math.max(0,Math.min(1,el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight))):0;
+ const prefKey='ravMusicianFollowScroll';
+ let follow=localStorage.getItem(prefKey)!=='false';
+ let remoteRatio=0,remoteSong=null,remoteSection=0, lastSent=-1, lastSendAt=0, busy=false, scrollSupported=true, lastLeaderSong=null;
+ const button=document.createElement('button');
+ button.id='ravMusicianScrollToggle';button.type='button';
+ button.innerHTML='<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 22V6m-4 4 4-4 4 4M19 6v16m-4-4 4 4 4-4"/><path class="rav-slash" d="M3 25 25 3" stroke-width="2.7"/></svg>';
+ const header=stage()?.querySelector('.fs-header');
+ if(header)header.appendChild(button);
+ function updateButton(){document.body.classList.toggle('rav-musician-scroll',musician());button.setAttribute('aria-pressed',String(follow));button.title=follow?'Scrolling automático: tocar para control manual':'Scrolling manual: tocar para seguir al Líder';button.setAttribute('aria-label',button.title)}
+ function applyScroll(){
+  if(!musician()||!follow||ravPreviewSongId!==null||!stage()?.classList.contains('open'))return;
+  if(!remoteSong||String(remoteSong)!==String(activeSong))return;
+  const el=scroller();if(!el)return;
+  const target=Math.max(0,el.scrollHeight-el.clientHeight)*remoteRatio;
+  if(Math.abs(el.scrollTop-target)>3)el.scrollTop=target;
+ }
+ button.onclick=()=>{follow=!follow;localStorage.setItem(prefKey,String(follow));updateButton();if(follow)applyScroll()};
+ async function publishScroll(force=false){
+  if(!leader()||!scrollSupported||!stage()?.classList.contains('open')||ravPreviewSongId!==null)return;
+  const el=scroller();if(!el||!activeSong)return;
+  const r=ratio(el),now=Date.now();
+  if(!force&&(now-lastSendAt<350||Math.abs(r-lastSent)<.003))return;
+  lastSendAt=now;lastSent=r;
+  // Update only scroll_ratio, never overwrite the song/section written by the leader.
+  // Conditional song_id protects a delayed scroll update from another song.
+  const song=String(activeSong);
+  try{await db(ravLiveTable,'PATCH','?id=eq.main&song_id=eq.'+encodeURIComponent(song),{scroll_ratio:r})}
+  catch(e){if(/scroll_ratio|column|schema cache/i.test(String(e.message||e)))scrollSupported=false;console.warn('RAV scroll sync publish:',e)}
+ }
+ let sendTimer=null;
+ scroller()?.addEventListener('scroll',()=>{
+  if(!leader()||ravPreviewSongId!==null)return;
+  if(sendTimer)return;
+  sendTimer=setTimeout(()=>{sendTimer=null;publishScroll()},360);
+ },{passive:true});
+ async function fetchScroll(){
+  updateButton();
+  if(!musician()||!follow||!scrollSupported||busy||ravPreviewSongId!==null)return;
+  busy=true;
+  try{
+   const rows=await db(ravLiveTable,'GET','?select=song_id,section_index,scroll_ratio&id=eq.main&limit=1');
+   if(rows?.[0]){
+    const row=rows[0];remoteSong=row.song_id;remoteSection=Number(row.section_index)||0;
+    remoteRatio=Math.max(0,Math.min(1,Number(row.scroll_ratio)||0));
+    applyScroll();
+   }
+  }catch(e){if(/scroll_ratio|column|schema cache/i.test(String(e.message||e)))scrollSupported=false;console.warn('RAV scroll sync fetch:',e)}
+  finally{busy=false}
+ }
+ // Scroll position should reset on new live song; leader must publish the new song first.
+ const previousPublish=ravLivePublish;
+ ravLivePublish=function(){
+  const isLeader=leader();const changed=isLeader&&activeSong&&String(activeSong)!==String(lastLeaderSong);
+  const result=previousPublish.apply(this,arguments);
+  if(changed){lastLeaderSong=String(activeSong);lastSent=-1;
+   Promise.resolve(ravLiveWriteQueue).then(()=>{if(leader()&&String(activeSong)===lastLeaderSong){const el=scroller();if(el)el.scrollTop=0;publishScroll(true)}});
+  }
+  return result;
+ };
+ // The existing follower update redraws the lyrics on song/section changes.
+ // Reapply proportional scroll afterwards only for musicians who opted in.
+ const oldApply=ravLiveApply;
+ ravLiveApply=function(row){
+  const oldSong=activeSong;
+  const result=oldApply.apply(this,arguments);
+  if(musician()&&follow&&ravPreviewSongId===null&&String(oldSong)===String(activeSong)){
+   requestAnimationFrame(applyScroll);
+  }
+  return result;
+ };
+ setInterval(fetchScroll,550);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)fetchScroll()});
+ updateButton();
 })();
 </script>
 </body></html>
