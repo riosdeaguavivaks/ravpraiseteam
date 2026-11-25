@@ -2,10 +2,12 @@
   "name": "RAV Praise Team",
   "short_name": "RAV Praise",
   "description": "RAV Praise Team — Líder, Músico y Audiovisual",
+  "lang": "es",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0c1220",
+  "background_color": "#07152d",
   "theme_color": "#101827",
   "icons": [
     {
@@ -19,6 +21,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
