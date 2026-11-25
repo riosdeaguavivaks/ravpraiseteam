@@ -1,10 +1,1 @@
-const C='praise-team-v8',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png','logo.png','logo-r.png'];
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(F)))});
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
-// Responde primero con lo guardado (rápido y sin internet) y actualiza en segundo plano.
-self.addEventListener('fetch',e=>{
-  const u=new URL(e.request.url);
-  if(e.request.method!=='GET'||u.origin!==location.origin)return;
-  e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(c=>{
-    const n=fetch(e.request).then(r=>{if(r.ok){const cp=r.clone();caches.open(C).then(x=>x.put(e.request,cp))}return r}).catch(()=>c);
-    return c||n}))});
+const CACHE='rav-praise-pwa-shell-v1';const ASSETS=['./manifest.webmanifest','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('rav-praise-pwa-shell-')&&k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==self.location.origin||e.request.method!=='GET')return;if(u.pathname.endsWith('/manifest.webmanifest')||u.pathname.includes('/icons/'))e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});
