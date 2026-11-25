@@ -267,7 +267,7 @@ body{background:linear-gradient(135deg,#e8f1ff 0%,#f4f7fc 48%,#dfeafa 100%);colo
 <div id="ravSetup" role="dialog" aria-modal="true" aria-labelledby="setupTitle"><div class="setup-card"><h2 id="setupTitle">Choose your screen mode</h2><p id="setupIntro">Choose how this device will display the live setlist.</p><div class="choices"><label class="choice"><input type="radio" name="ravMode" value="follow" checked> <b id="setupFollow">Follow the leader</b><small id="setupFollowHelp">The leader selects songs and sections for this screen.</small></label><label class="choice"><input type="radio" name="ravMode" value="local"> <b id="setupLocal">Control my screen</b><small id="setupLocalHelp">Browse songs and sections on this device without changing anyone else's screen.</small></label></div><h3 id="setupLanguage">Language on this device</h3><div class="langs"><label><input type="radio" name="ravLang" value="en" checked> EN · English</label><label><input type="radio" name="ravLang" value="es"> ES · Español</label></div><button class="setup-continue" id="ravSetupContinue">Continue</button><p id="setupNote" style="font-size:12px">These preferences apply only to this device. They do not change the leader's permissions or other devices.</p></div></div>
 <div id="auth" class="auth"><div class="auth-card"><div id="ravLoginLanguage" aria-label="Idioma / Language"><button type="button" id="ravSingleLanguage" aria-label="Cambiar idioma / Change language">ES</button></div><img class="official-logo" src="./logo.png" alt="Logo oficial RAV Praise Team"><h1>RAV <span style="color:#e9b967">Praise Team</span></h1><p class="muted">Acceso privado · RÍOS DE AGUA VIVA</p><div class="field"><label>Correo electrónico</label><input id="email" type="email" autocomplete="username" placeholder="tu@correo.com"></div><div class="field"><label>Contraseña</label><input id="password" type="password" autocomplete="current-password" placeholder="Contraseña"></div><button class="btn" id="loginBtn">Iniciar sesión</button><button class="btn secondary" id="forgotPasswordBtn" type="button" style="margin-top:10px">Olvidé mi contraseña / Forgot password</button><div id="passwordFlow" class="hidden" style="margin-top:16px;border-top:1px solid #5277a3;padding-top:15px"><p id="passwordFlowTitle" style="font-weight:700;text-align:left">Establecer contraseña / Set password</p><div id="resetEmailArea" class="hidden"><p class="small">Introduce tu correo y te enviaremos un enlace seguro.</p><div class="field"><label>Correo electrónico / Email</label><input id="resetEmail" type="email" autocomplete="email"></div><button class="btn" id="sendResetBtn" type="button">Enviar enlace / Send link</button></div><div id="newPasswordArea" class="hidden"><div class="field"><label>Nueva contraseña / New password</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8"></div><div class="field"><label>Confirmar contraseña / Confirm password</label><input id="confirmNewPassword" type="password" autocomplete="new-password" minlength="8"></div><button class="btn" id="saveNewPasswordBtn" type="button">Guardar contraseña / Save password</button></div><button class="btn outline" id="cancelPasswordFlow" type="button" style="margin-top:10px">Volver / Back</button><p id="passwordFlowMessage" class="small" role="status" aria-live="polite"></p></div><p id="authError" class="warning small"></p><div class="notice">Acceso exclusivo para integrantes autorizados. Los datos compartidos se consultan en Supabase.</div></div></div>
 <div id="app" class="shell hidden"><aside class="sidebar"><div class="brand"><div class="brand-logo-wrap"><img class="brand-logo" src="logo.png" alt="Logo oficial RAV Praise Team" onerror="this.onerror=null;this.src=document.querySelector('.official-logo').src"></div><div>RAV <span>Praise Team</span></div><small>RÍOS DE AGUA VIVA</small></div><button class="nav active" data-tab="home">⌂ &nbsp; Inicio</button><button class="nav" data-tab="songs">♫ &nbsp; Cantos</button><button class="nav" data-tab="setlists">▤ &nbsp; Playlists</button><button class="nav" data-tab="stage">▣ &nbsp; Setlist en vivo</button><button class="nav" data-tab="chat">☏ &nbsp; Chat</button><button class="nav nav-bottom" data-tab="account">◉ &nbsp; Cuenta</button></aside><main class="main"><div class="top"><h1 id="pageTitle">Inicio</h1><div class="topright"><span id="roleBadge" class="pill">Monitor</span><button id="logoutTop" class="btn secondary sm">Salir</button></div></div><div id="page"></div></main><nav class="mobile-nav"><button data-tab="home">Inicio</button><button data-tab="songs">Cantos</button><button data-tab="setlists">Playlists</button><button data-tab="stage">Setlist</button><button data-tab="chat">Chat</button><button data-tab="account">Cuenta</button></nav></div>
-<div id="ravFullStage" role="dialog" aria-label="Lectura continua de cantos" style="--rav-font:32px"><div class="fs-header"><span id="ravFsSong"></span><button class="btn secondary sm" id="ravFsClose">✕ Salir</button></div><nav class="fs-chips" id="ravFsChips" aria-label="Secciones del canto"></nav><div class="fs-content" id="ravFsScroll" tabindex="0" aria-label="Letra y acordes"></div><div class="fs-controls"><button class="btn secondary" id="ravFsPrev">← Canto anterior</button><button class="btn secondary hidden" id="ravFsBackLive" type="button">↺ Volver al Líder</button><div class="fs-size"><button class="btn secondary" id="ravFsSmaller" aria-label="Reducir letra">−</button><span id="ravFsSizeLabel" class="small">1.0×</span><button class="btn secondary" id="ravFsLarger" aria-label="Aumentar letra">+</button></div><button class="btn secondary" id="ravFsNext">Canto siguiente →</button></div></div>
+<div id="ravFullStage" role="dialog" aria-label="Lectura continua de cantos" style="--rav-font:32px"><div class="fs-header"><button type="button" id="ravMusicianLogout" title="Cerrar sesión / Sign out" aria-label="Cerrar sesión / Sign out">↪ <span>Salir</span></button><span id="ravFsSong"></span><button class="btn secondary sm" id="ravFsClose">✕ Salir</button></div><nav class="fs-chips" id="ravFsChips" aria-label="Secciones del canto"></nav><div class="fs-content" id="ravFsScroll" tabindex="0" aria-label="Letra y acordes"></div><div class="fs-controls"><button class="btn secondary" id="ravFsPrev">← Canto anterior</button><button class="btn secondary hidden" id="ravFsBackLive" type="button">↺ Volver al Líder</button><div class="fs-size"><button class="btn secondary" id="ravFsSmaller" aria-label="Reducir letra">−</button><span id="ravFsSizeLabel" class="small">1.0×</span><button class="btn secondary" id="ravFsLarger" aria-label="Aumentar letra">+</button></div><button class="btn secondary" id="ravFsNext">Canto siguiente →</button></div></div>
 <script>
 'use strict';
 // CONFIGURA ESTOS DOS VALORES CON LOS DE TU PROYECTO EXISTENTE.
@@ -341,13 +341,23 @@ async function saveInvitedPassword(){const btn=$('saveNewPasswordBtn');btn.disab
  }catch(e){$('passwordFlowMessage').textContent='No se pudo guardar: '+e.message}finally{btn.disabled=false}}
 async function login(){try{assertConfigured();const email=$('email').value.trim(),password=$('password').value;if(!email||!password)throw Error('Ingresa correo y contraseña.');$('loginBtn').disabled=true;$('authError').textContent='';const a=await request('/auth/v1/token?grant_type=password','POST',{email,password});if(!a.access_token||!a.user)throw Error('No se pudo autenticar');session={...a,expires_at:Math.floor(Date.now()/1000)+a.expires_in};role=ravResolveRole(a.user);store('session',session);loadData();showApp();await refreshData()}catch(e){$('authError').textContent=e.message;if(session)logout()}finally{$('loginBtn').disabled=false}}
 async function restore(){if(!SUPABASE_URL||!SUPABASE_ANON_KEY)return;const a=load('session',null);if(!a?.refresh_token)return;if(localStorage.getItem('ravpt_last_activity_v2')&&Date.now()-Number(localStorage.getItem('ravpt_last_activity_v2'))>=120*60000){localStorage.removeItem(LOCAL_PREFIX+'session');localStorage.removeItem('ravpt_last_activity_v2');return;}try{const b=await request('/auth/v1/token?grant_type=refresh_token','POST',{refresh_token:a.refresh_token});if(!b.access_token||!b.user)return;session={...b,expires_at:Math.floor(Date.now()/1000)+b.expires_in};role=ravResolveRole(b.user);store('session',session);loadData();showApp();await refreshData()}catch(e){logout();$('authError').textContent='Inicia sesión nuevamente: '+e.message}}
-function logout(){localStorage.removeItem('ravpt_last_activity_v2');session=null;role='monitor';songs=[];playlists=[];chat=[];localStorage.removeItem(LOCAL_PREFIX+'session');$('app').classList.add('hidden');$('auth').classList.remove('hidden');$('password').value=''}
+function logout(){
+ localStorage.removeItem('ravpt_last_activity_v2');
+ session=null;role='monitor';songs=[];playlists=[];chat=[];
+ activePlaylist=null;activeSong=null;activeSection=0;
+ localStorage.removeItem(LOCAL_PREFIX+'session');
+ // El lector vive fuera de #app: ocultar la app no cierra esta capa.
+ document.body.classList.remove('rav-monitor-kiosk','rav-musician-landscape','rav-musician-scroll');
+ closeRavFullStage();
+ $('ravFsScroll').replaceChildren();$('ravFsChips').replaceChildren();$('ravFsSong').textContent='';
+ $('app').classList.add('hidden');$('auth').classList.remove('hidden');$('password').value='';
+}
 function showApp(){$('auth').classList.add('hidden');$('app').classList.remove('hidden');render();ravApplyLanguage()}
 const names={home:'Inicio',songs:'Cantos',setlists:'Playlists por evento',stage:'Setlist en vivo',chat:'Chat del equipo',account:'Cuenta'};
-function switchTab(t){tab=t;editSongId=null;editPlaylistId=null;render()}
-function render(){$('pageTitle').textContent=names[tab];$('roleBadge').textContent=role==='leader'?'Control autorizado':role==='audiovisual'?'Audiovisual':'Monitor';document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));const views={home:renderHome,songs:renderSongs,setlists:renderPlaylists,stage:renderStage,chat:renderChat,account:renderAccount};$('page').innerHTML=role==='audiovisual'?renderAudiovisual():views[tab]();bindPage()}
+function switchTab(t){if(t==='chat')closeRavFullStage();tab=t;editSongId=null;editPlaylistId=null;render()}
+function render(){$('pageTitle').textContent=names[tab];$('roleBadge').textContent=role==='leader'?'Control autorizado':role==='audiovisual'?'Audiovisual':'Monitor';document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));const views={home:renderHome,songs:renderSongs,setlists:renderPlaylists,stage:renderStage,chat:renderChat,account:renderAccount};$('page').innerHTML=tab==='chat'?renderChat():role==='audiovisual'?renderAudiovisual():views[tab]();bindPage()}
 function renderAudiovisual(){const list=playlists.find(p=>p.id===activePlaylist)||playlists[0];const items=list?.items||[];return `<div class="panel"><h2>${ravPrefs?.language==='en'?'Audiovisual — complete setlist':'Audiovisual — setlist completo'}</h2><p class="muted">${ravPrefs?.language==='en'?'Read-only song list for checking ProPresenter during rehearsal.':'Lista de solo lectura para comparar con ProPresenter durante el ensayo.'}</p><div class="field"><label>${ravPrefs?.language==='en'?'Select playlist':'Seleccionar playlist'}</label><select id="avPlaylist">${playlists.map(p=>`<option value="${esc(p.id)}" ${p.id===list?.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>${items.length?items.map((it,i)=>{const song=songs.find(s=>s.id===it.songId);return `<div class="listitem" style="margin-bottom:9px"><div class="row"><div><b>${i+1}. ${esc(song?.title||'Canto no disponible')}</b><div class="muted small">${esc(it.key||song?.key||'')}</div></div><button class="btn secondary sm" data-av-view="${esc(it.songId)}">${ravPrefs?.language==='en'?'View':'Ver'}</button></div></div>`}).join(''):`<div class="empty">${ravPrefs?.language==='en'?'No songs in this setlist.':'No hay cantos en este setlist.'}</div>`}<div class="actions" style="margin-top:14px"><button class="btn secondary" id="avRefresh">${ravPrefs?.language==='en'?'Refresh list':'Actualizar lista'}</button><button class="btn outline" id="avLogout">${ravPrefs?.language==='en'?'Sign out':'Cerrar sesión'}</button></div></div>`}
-function renderHome(){let upcoming=[...playlists].filter(p=>p.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,3);return `<div class="panel"><h2>Bienvenido a RAV Praise Team</h2><p class="muted">Prepara cantos, organiza eventos y consulta la presentación del equipo.</p><div class="grid"><div class="card"><h3>${songs.length}</h3><div class="muted">Cantos en Supabase</div></div><div class="card"><h3>${playlists.length}</h3><div class="muted">Playlists compartidas</div></div><div class="card"><h3>${esc(role==='leader'?'Líder':'Monitor')}</h3><div class="muted">Tu permiso actual</div></div></div></div><div class="panel"><h2>Próximos eventos</h2>${upcoming.length?upcoming.map(p=>`<div class="listitem row"><div><b>${esc(p.name)}</b><div class="muted small">${esc(p.date)} · ${p.items.length} cantos</div></div><button class="btn secondary sm" data-openplaylist="${esc(p.id)}">Ver</button></div>`).join(''):'<div class="empty">Aún no hay próximos eventos.</div>'}</div><div class="notice">Cantos y playlists sincronizados con Supabase al abrir la aplicación. El control en vivo y el chat compartido todavía no están habilitados.</div>`}
+function renderHome(){let upcoming=[...playlists].filter(p=>p.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,3);return `<div class="panel"><h2>Bienvenido a RAV Praise Team</h2><p class="muted">Prepara cantos, organiza eventos y consulta la presentación del equipo.</p><div class="grid"><div class="card"><h3>${songs.length}</h3><div class="muted">Cantos en Supabase</div></div><div class="card"><h3>${playlists.length}</h3><div class="muted">Playlists compartidas</div></div><div class="card"><h3>${esc(role==='leader'?'Líder':'Monitor')}</h3><div class="muted">Tu permiso actual</div></div></div></div><div class="panel"><h2>Próximos eventos</h2>${upcoming.length?upcoming.map(p=>`<div class="listitem row"><div><b>${esc(p.name)}</b><div class="muted small">${esc(p.date)} · ${p.items.length} cantos</div></div><button class="btn secondary sm" data-openplaylist="${esc(p.id)}">Ver</button></div>`).join(''):'<div class="empty">Aún no hay próximos eventos.</div>'}</div><div class="notice">Cantos y playlists sincronizados con Supabase al abrir la aplicación. El chat del equipo y el setlist en vivo están disponibles desde el menú.</div>`}
 function renderSongs(){if(editSongId!==null)return renderSongEditor();return `<div class="panel"><div class="row"><div><h2>Biblioteca de cantos</h2><p class="muted small">Estrofas independientes, acordes y tono original.</p></div>${canEdit()?'<button class="btn" id="newSong">+ Nuevo canto</button>':''}</div><input class="search" id="songSearch" placeholder="Buscar por título o autor..." style="margin:10px 0 15px"><div id="songResults">${songCards(songs)}</div></div>`}
 function songCards(arr){return arr.length?`<div class="grid">${arr.map(s=>`<div class="card"><div class="tag">Tono original: ${esc(s.key)}</div><h3>${esc(s.title)}</h3><div class="muted small">${esc(s.author||'Sin autor')} · ${s.sections.length} secciones</div><div class="actions" style="margin-top:13px"><button class="btn secondary sm" data-view-song="${esc(s.id)}">Ver</button>${canEdit()?`<button class="btn outline sm" data-edit-song="${esc(s.id)}">Editar</button><button class="btn sm" data-add-to-setlist="${esc(s.id)}">Agregar al setlist</button>`:''}</div></div>`).join('')}</div>`:'<div class="empty">No hay cantos todavía.</div>'}
 // RAV importer: preserve every original line and its spacing.
@@ -370,8 +380,8 @@ function renderPlaylistEditor(){let p=playlists.find(x=>x.id===editPlaylistId)||
 function playlistItemsHtml(items){return items.length?items.map((it,i)=>{let s=songs.find(x=>x.id===it.songId);return `<div class="listitem row" data-item-row="${i}"><div style="flex:1"><b>${i+1}. ${esc(s?.title||'Canto eliminado')}</b><div class="muted small">Tono para este evento</div><select class="item-key" style="background:#101b2b;color:white;padding:6px;border-radius:6px">${KEYS.map(k=>`<option ${it.key===k?'selected':''}>${k}</option>`).join('')}</select><input type="hidden" class="item-song" value="${esc(it.songId)}"></div><div class="actions"><button class="btn secondary sm" data-move-up="${i}" ${i===0?'disabled':''}>↑</button><button class="btn secondary sm" data-move-down="${i}" ${i===items.length-1?'disabled':''}>↓</button><button class="btn danger sm" data-remove-item="${i}">×</button></div></div>`}).join(''):'<div class="empty">Esta playlist todavía no tiene cantos.</div>'}
 function renderStage(){if(role==='leader'&&activePlaylist){ravLiveCurrent()}let p=playlists.find(x=>x.id===activePlaylist),items=p?.items||[],item=items.find(x=>x.songId===activeSong)||items[0],s=songs.find(x=>x.id===item?.songId),sect=s?.sections[activeSection]||s?.sections[0];return `<div class="setlist-screen"><div class="row"><div><b>SETLIST</b><div class="small" style="color:#bbb">Fondo negro · letra blanca</div></div><span class="pill">${leaderMode?'Vista Control':'Vista monitor / preparación'}</span></div><div class="inline" style="margin-top:20px"><div class="field"><label>Playlist</label><select id="stagePlaylist"><option value="">Selecciona evento</option>${playlists.map(x=>`<option value="${esc(x.id)}" ${x.id===activePlaylist?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div><div class="field"><label>Canto</label><select id="stageSong">${items.map(it=>{let song=songs.find(x=>x.id===it.songId);return `<option value="${esc(it.songId)}" ${it.songId===(s?.id||activeSong)?'selected':''}>${esc(song?.title||'Canto eliminado')}</option>`}).join('')}</select></div><div class="field"><label>Tonalidad</label><select id="stageKey">${KEYS.map(k=>`<option ${k===(s?stageKey:'G')?'selected':''}>${k}</option>`).join('')}</select></div></div>${canEdit()?`<div class="actions"><button class="btn secondary sm" id="toggleLeader">${leaderMode?'Salir de vista líder':'Vista líder (solo local)'}</button></div>`:''}${s?`<div class="actions" style="margin-top:18px"><button class="btn" id="ravOpenFullStage">⛶ Pantalla completa — letras grandes</button></div><h2 style="color:white;margin-top:20px">${esc(s.title)}</h2><div class="section-grid">${s.sections.map((part,i)=>`<button class="section ${i===activeSection?'active':''}" data-stage-section="${i}"><div class="name" style="color:${esc(part.color||'#ffffff')}">${esc(part.type)}</div><div class="preview">${esc(part.lyrics.slice(0,90))}</div></button>`).join('')}</div><div class="stage ${monitorOnly?'monitor':''}"><div class="sectlabel" style="color:${esc(sect?.color||'#ffffff')}">${esc(sect?.type||'')}</div><div class="chords">${esc(transpose(sect?.chords||'',s.key,stageKey))}</div><div class="lyrics">${!sect?.chords&&String(sect?.lyrics||'').split('\n').some(ravIsChordLine)?ravMixedHtml(sect.lyrics,s.key,stageKey):esc(sect?.lyrics||'Instrumental')}</div></div><div class="actions" style="justify-content:center;margin-top:15px"><button class="btn secondary" id="prevSection" ${activeSection===0?'disabled':''}>← Anterior</button><button class="btn secondary" id="nextSection" ${activeSection===s.sections.length-1?'disabled':''}>Siguiente →</button></div>`:'<div class="empty">Elige una playlist con cantos para visualizar las secciones.</div>'}<p class="small" style="color:#999">Sincronización automática de cantos y estrofas mediante Supabase.</p></div>`}
 function renderChat(){return `<div class="panel"><h2>Chat privado del equipo</h2><p class="muted small">Chat compartido pendiente de integración. Esta vista todavía es una demostración local.</p><div class="chatlog" id="chatlog">${chat.map(m=>`<div class="bubble mine"><b>${esc(m.name)}</b>${esc(m.text)}<div class="small muted">${esc(m.time)}</div></div>`).join('')}</div><div class="inline" style="margin-top:12px"><div class="field" style="flex:4"><label>Mensaje</label><input id="chatInput" maxlength="500" placeholder="Escribe un mensaje..."></div><button class="btn" id="sendChat" style="margin-bottom:12px">Enviar</button></div></div>`}
-function renderAccount(){return `<div class="panel"><h2>Mi cuenta</h2><div class="listitem"><b>Correo</b><p class="muted">${esc(session?.user?.email)}</p><b>Permiso</b><p class="muted">${role==='leader'?'Control autorizado':role==='audiovisual'?'Audiovisual / lectura':'Músico / lectura'}</p><b>Sesión</b><p class="muted">Sin cierre automático por inactividad. Puedes salir manualmente.</p></div><div class="actions" style="margin-top:15px"><button class="btn secondary" id="logoutAccount">Cerrar sesión</button><button class="btn secondary" id="reloadData">Actualizar datos</button></div></div><div class="panel"><h2>Conexión</h2><p class="muted">Los cantos y las playlists se leen y guardan en Supabase. El chat todavía es una demostración local. La sincronización del setlist requiere la tabla rav_live_state.</p></div>`}
-function bindPage(){if(role==='audiovisual'){const selector=$('avPlaylist');if(selector)selector.onchange=e=>{activePlaylist=e.target.value;render()};document.querySelectorAll('[data-av-view]').forEach(b=>b.onclick=()=>openRavSongPreview(b.dataset.avView));if($('avRefresh'))$('avRefresh').onclick=()=>refreshData().catch(e=>alert(e.message));if($('avLogout'))$('avLogout').onclick=logout;return}document.querySelectorAll('[data-openplaylist]').forEach(b=>b.onclick=()=>{activePlaylist=b.dataset.openplaylist;activeSong=null;activeSection=0;let p=playlists.find(x=>x.id===activePlaylist);let it=p?.items[0];stageKey=it?.key||'G';persist();tab='stage';render()});if(tab==='songs')bindSongs();if(tab==='setlists')bindPlaylists();if(tab==='stage')bindStage();if(tab==='chat'){$('sendChat').disabled=true;$('chatInput').disabled=true;$('chatInput').placeholder='Chat compartido próximamente'}if(tab==='account'){$('logoutAccount').onclick=logout;$('reloadData').onclick=()=>refreshData().catch(e=>alert(e.message))}}
+function renderAccount(){return `<div class="panel"><h2>Mi cuenta</h2><div class="listitem"><b>Correo</b><p class="muted">${esc(session?.user?.email)}</p><b>Permiso</b><p class="muted">${role==='leader'?'Control autorizado':role==='audiovisual'?'Audiovisual / lectura':'Músico / lectura'}</p><b>Sesión</b><p class="muted">Sin cierre automático por inactividad. Puedes salir manualmente.</p></div><div class="actions" style="margin-top:15px"><button class="btn secondary" id="logoutAccount">Cerrar sesión</button><button class="btn secondary" id="reloadData">Actualizar datos</button></div></div><div class="panel"><h2>Conexión</h2><p class="muted">Los cantos y las playlists se leen y guardan en Supabase. El chat del equipo guarda los mensajes en Supabase. La sincronización del setlist requiere la tabla rav_live_state.</p></div>`}
+function bindPage(){if(tab==='chat'){ravBindChatPage();return}if(role==='audiovisual'){const selector=$('avPlaylist');if(selector)selector.onchange=e=>{activePlaylist=e.target.value;render()};document.querySelectorAll('[data-av-view]').forEach(b=>b.onclick=()=>openRavSongPreview(b.dataset.avView));if($('avRefresh'))$('avRefresh').onclick=()=>refreshData().catch(e=>alert(e.message));if($('avLogout'))$('avLogout').onclick=logout;return}document.querySelectorAll('[data-openplaylist]').forEach(b=>b.onclick=()=>{activePlaylist=b.dataset.openplaylist;activeSong=null;activeSection=0;let p=playlists.find(x=>x.id===activePlaylist);let it=p?.items[0];stageKey=it?.key||'G';persist();tab='stage';render()});if(tab==='songs')bindSongs();if(tab==='setlists')bindPlaylists();if(tab==='stage')bindStage();if(tab==='chat'){$('sendChat').disabled=true;$('chatInput').disabled=true;$('chatInput').placeholder='Chat compartido próximamente'}if(tab==='account'){$('logoutAccount').onclick=logout;$('reloadData').onclick=()=>refreshData().catch(e=>alert(e.message))}}
 function bindSongs(){if(editSongId===null){if($('newSong'))$('newSong').onclick=()=>{editSongId='';render()};$('songSearch').oninput=e=>{$('songResults').innerHTML=songCards(songs.filter(s=>(s.title+' '+s.author).toLowerCase().includes(e.target.value.toLowerCase())));bindSongCards()};bindSongCards();return}$('cancelSong').onclick=()=>{editSongId=null;render()};$('ravDetectSong').onclick=()=>{const raw=$('ravPasteSong').value;if(!raw.trim())return alert('Pega primero el canto completo.');const existing=[...document.querySelectorAll('[data-section-row]')].some(x=>x.querySelector('.section-lyrics').value.trim()||x.querySelector('.section-chords').value.trim());if(existing&&!confirm('Esto reemplazará las secciones mostradas en el formulario, pero no cambiará ningún canto guardado hasta presionar Guardar. ¿Continuar?'))return;const parsed=ravDetectSections(raw);$('sectionEditors').innerHTML=parsed.map((x,i)=>sectionEditor(x,i)).join('');bindRemoveSections();$('ravImportFeedback').textContent=parsed.length+' secciones sugeridas. Verifica que cada encabezado, acorde y línea esté correcto antes de guardar.';};$('ravClearPaste').onclick=()=>{$('ravPasteSong').value='';$('ravImportFeedback').textContent='Texto pegado limpiado. Las secciones del formulario permanecen sin cambios.'};$('addSection').onclick=()=>{let box=$('sectionEditors');let i=box.querySelectorAll('[data-section-row]').length;box.insertAdjacentHTML('beforeend',sectionEditor({type:'Estrofa '+(i+1),lyrics:'',chords:'',color:'#ffffff'},i));bindRemoveSections()};bindRemoveSections();$('saveSong').onclick=()=>{if(!gate())return;let title=$('songTitle').value.trim();if(!title)return alert('Escribe el título');let sections=collectSections();if(!sections.length)return alert('Agrega una sección');let id=editSongId||uid();let record={title,author:$('songAuthor').value.trim(),key:$('songKey').value,body:JSON.stringify({sections})};guardedSave(async()=>{if(editSongId)await db('songs','PATCH','?id=eq.'+encodeURIComponent(id),record);else await db('songs','POST','',{id,...record});editSongId=null})};if($('deleteSong'))$('deleteSong').onclick=()=>{if(!gate()||!confirm('¿Eliminar este canto? Si está en una playlist, Supabase impedirá borrarlo.'))return;guardedSave(async()=>{await db('songs','DELETE','?id=eq.'+encodeURIComponent(editSongId));editSongId=null})}}
 function bindSongCards(){document.querySelectorAll('[data-add-to-setlist]').forEach(b=>b.onclick=()=>ravOpenAddToSetlist(b.dataset.addToSetlist));document.querySelectorAll('[data-edit-song]').forEach(b=>b.onclick=()=>{editSongId=b.dataset.editSong;render()});document.querySelectorAll('[data-view-song]').forEach(b=>b.onclick=()=>{let s=songs.find(x=>x.id===b.dataset.viewSong);if(!s)return;openRavSongPreview(s.id)})}
 function bindRemoveSections(){document.querySelectorAll('[data-remove-section]').forEach(b=>b.onclick=()=>{b.closest('[data-section-row]').remove();document.querySelectorAll('[data-section-row]').forEach((x,i)=>x.dataset.sectionRow=i)})}
@@ -428,7 +438,7 @@ function updateRavFullStage(scrollTop=true){const {song,items,index}=ravFullCurr
 const sections=song.sections||[];
 const readerSection=ravPreviewSongId!==null?ravPreviewSection:activeSection;
 $('ravFsChips').innerHTML=sections.map((part,i)=>`<button class="fs-chip ${i===readerSection?'current':''}" style="--chip:${esc(ravSectionColor(part))}" data-fs-section="${i}" title="${esc(part.type||'Sección')}" aria-label="Ir a ${esc(part.type||'Sección')}">${esc((part.type||'S'+(i+1)).replace(/Estrofa/i,'V').replace(/Verso/i,'V').replace(/Coro/i,'C').replace(/Puente/i,'P').replace(/Intro/i,'IN').slice(0,4))}</button>`).join('');
-$('ravFsScroll').innerHTML=(role==='monitor'?'<div id="ravMusicianTopActions"><button type="button" id="ravMusicianLogout" title="Cerrar sesión / Sign out" aria-label="Cerrar sesión / Sign out">↪ <span>Salir</span></button></div>':'')+sections.map((part,i)=>`<section class="fs-block" id="ravReaderSection${i}"><div class="fs-section" style="color:${esc(ravSectionColor(part))}">${esc(part.type||'Sección')}</div>${part.chords?`<div class="fs-chords">${esc(transpose(part.chords,song.key,stageKey))}</div>`:''}${!part.chords&&String(part.lyrics||'').split('\n').some(ravIsChordLine)?ravMixedHtml(part.lyrics,song.key,stageKey):`<div class="fs-lyrics">${esc(part.lyrics||'Instrumental')}</div>`}</section>`).join('');
+$('ravFsScroll').innerHTML=sections.map((part,i)=>`<section class="fs-block" id="ravReaderSection${i}"><div class="fs-section" style="color:${esc(ravSectionColor(part))}">${esc(part.type||'Sección')}</div>${part.chords?`<div class="fs-chords">${esc(transpose(part.chords,song.key,stageKey))}</div>`:''}${!part.chords&&String(part.lyrics||'').split('\n').some(ravIsChordLine)?ravMixedHtml(part.lyrics,song.key,stageKey):`<div class="fs-lyrics">${esc(part.lyrics||'Instrumental')}</div>`}</section>`).join('');
 $('ravFsPrev').disabled=index===0;$('ravFsNext').disabled=index>=items.length-1;$('ravFsBackLive').classList.toggle('hidden',!ravLiveFollowing()||!ravPreviewSongId);
 document.querySelectorAll('[data-fs-section]').forEach(btn=>btn.onclick=()=>{if(role==='leader'&&canEdit()&&ravPreviewSongId!==null){const p=playlists.find(x=>String(x.id)===String(activePlaylist));if(p?.items?.some(x=>String(x.songId)===String(ravPreviewSongId))){activeSong=ravPreviewSongId;ravPreviewSongId=null;}}if(ravPreviewSongId!==null)ravPreviewSection=Number(btn.dataset.fsSection);else if(ravLiveFollowing())return;else {activeSection=Number(btn.dataset.fsSection);if(role==='leader'&&canEdit())ravLivePublish();}document.querySelectorAll('.fs-chip').forEach(b=>b.classList.toggle('current',b===btn));$('ravReaderSection'+(ravPreviewSongId!==null?ravPreviewSection:activeSection))?.scrollIntoView({behavior:'smooth',block:'start'})});
 if(scrollTop)$('ravFsScroll').scrollTop=0;
@@ -487,7 +497,7 @@ Object.assign(ravLabels,{
  'Mi cuenta':'My account','Correo':'Email','Permiso':'Permission','Sesión':'Session',
  'Músico / lectura':'Monitor / read-only','Sin cierre automático por inactividad. Puedes salir manualmente.':'No automatic inactivity sign-out. You can sign out manually.',
  'Actualizar datos':'Refresh data','Conexión':'Connection',
- 'Los cantos y las playlists se leen y guardan en Supabase. El chat todavía es una demostración local. La sincronización del setlist requiere la tabla rav_live_state.':'Songs and playlists are stored in Supabase. Chat is still local. Live setlist requires the rav_live_state table in Supabase.',
+ 'Los cantos y las playlists se leen y guardan en Supabase. El chat del equipo guarda los mensajes en Supabase. La sincronización del setlist requiere la tabla rav_live_state.':'Songs and playlists are stored in Supabase. Chat is still local. Live setlist requires the rav_live_state table in Supabase.',
  'Guardar':'Save','Eliminar':'Delete','Nuevo canto':'New song',
  'No se agregaron cantos nuevos; los seleccionados ya estaban en el setlist.':'No new songs added; selected songs were already in the setlist.',
  'Secciones sugeridas. Verifica que cada encabezado, acorde y línea esté correcto antes de guardar.':'Suggested sections. Check each heading, chord and line before saving.'
@@ -697,8 +707,8 @@ bindPage=function(){ravModesOldBindPage();if(role==='audiovisual'){
  }};
 function ravBindAvViews(){document.querySelectorAll('[data-av-view]').forEach(b=>b.onclick=()=>openRavSongPreview(b.dataset.avView))}
 const ravModesOldRender=render;
-render=function(){if(!session)return;if(!ravRoleReady){role='monitor';monitorOnly=true}if(role==='monitor'&&!ravIsAdmin)tab='stage';if(tab==='ravAdmin'&&ravCanManageUsers){document.getElementById('pageTitle').textContent=ravRoleText('Administración de usuarios','User administration');document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('active'));document.getElementById('page').innerHTML=ravAdminPage();ravBindAdminPage()}else ravModesOldRender();ravEnsureAdminNav();const badge=document.getElementById('roleBadge');if(badge)badge.textContent=role==='leader'?ravRoleText('Líder','Leader'):role==='audiovisual'?'Audiovisual':'Monitor';
- document.querySelectorAll('[data-tab]').forEach(b=>{const t=b.dataset.tab;b.style.display=role==='monitor'&&!ravIsAdmin&&t!=='stage'&&t!=='account'?'none':''});
+render=function(){if(!session)return;if(!ravRoleReady){role='monitor';monitorOnly=true}if(role==='monitor'&&!ravIsAdmin&&tab!=='chat')tab='stage';if(tab==='ravAdmin'&&ravCanManageUsers){document.getElementById('pageTitle').textContent=ravRoleText('Administración de usuarios','User administration');document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('active'));document.getElementById('page').innerHTML=ravAdminPage();ravBindAdminPage()}else ravModesOldRender();ravEnsureAdminNav();const badge=document.getElementById('roleBadge');if(badge)badge.textContent=role==='leader'?ravRoleText('Líder','Leader'):role==='audiovisual'?'Audiovisual':'Monitor';
+ document.querySelectorAll('[data-tab]').forEach(b=>{const t=b.dataset.tab;b.style.display=role==='monitor'&&!ravIsAdmin&&t!=='stage'&&t!=='account'&&t!=='chat'?'none':''});
  const logoutTop=document.getElementById('logoutTop');if(logoutTop)logoutTop.onclick=ravLogoutSafe;
  if(role==='monitor'&&!ravIsAdmin){
   for(const id of ['stagePlaylist','stageSong','stageKey','prevSection','nextSection','toggleLeader']){const el=document.getElementById(id);if(el)el.disabled=true}
@@ -706,7 +716,7 @@ render=function(){if(!session)return;if(!ravRoleReady){role='monitor';monitorOnl
  }
 };
 const ravModesOldSwitchTab=switchTab;
-switchTab=function(t){if(t==='ravAdmin'&&ravCanManageUsers){tab=t;render();return}if(role==='monitor'&&!ravIsAdmin&&t!=='stage'&&t!=='account')return;ravModesOldSwitchTab(t)};
+switchTab=function(t){if(t==='ravAdmin'&&ravCanManageUsers){tab=t;render();return}if(role==='monitor'&&!ravIsAdmin&&t!=='stage'&&t!=='account'&&t!=='chat')return;ravModesOldSwitchTab(t)};
 const ravModesOldLivePublish=ravLivePublish;
 ravLivePublish=function(){if(!ravRoleReady||!canEdit())return;ravModesOldLivePublish()};
 // Prevent legacy screen-mode dialog from overriding the new permission picker.
@@ -1058,7 +1068,7 @@ body:not(.rav-monitor-kiosk) #ravFsNextTitle{display:none!important}
    el.textContent=(ravPrefs?.language==='en'?'Next: ':'Siguiente: ')+(title||'—');
  }
  function kiosk(){
-   const enabled=isMonitor();
+   const enabled=isMonitor()&&tab!=='chat';
    document.body.classList.toggle('rav-monitor-kiosk',enabled);
    if(!enabled)return;
    const stage=$id('ravFullStage');if(!stage)return;
@@ -1288,10 +1298,205 @@ body.rav-musician-scroll #ravMusicianScrollToggle{display:inline-flex}
  update();
 })();
 </script>
-<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker:',err))); }</script></body></html>
-<style id="rav-musician-logout-visible-fix">
-/* Inside the actual scroll container: scrolls away with the song, never sticky. */
-#ravFullStage #ravMusicianTopActions{position:relative!important;display:flex!important;justify-content:flex-start!important;align-items:center!important;min-height:30px!important;margin:0 0 5px!important;padding:0!important;z-index:1!important}
-#ravFullStage #ravMusicianTopActions #ravMusicianLogout{position:static!important;inset:auto!important;display:inline-flex!important;gap:5px!important;align-items:center!important;justify-content:center!important;width:auto!important;height:27px!important;min-width:27px!important;padding:3px 6px!important;background:rgba(35,35,35,.72)!important;color:#d6d6d6!important;border:1px solid #555!important;border-radius:5px!important;font-size:12px!important;opacity:.9!important;line-height:1!important}
-#ravFullStage #ravMusicianTopActions #ravMusicianLogout span{font-size:11px!important}
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker:',err))); }</script><style id="rav-musician-logout-portrait-fix">
+/* La salida permanece fuera del contenido que sigue el desplazamiento del líder. */
+#ravFullStage #ravMusicianLogout{display:none;position:static;inset:auto;flex:0 0 auto;align-items:center;justify-content:center;gap:5px;min-width:54px;width:auto;min-height:44px;height:44px;padding:6px 9px;border:1px solid #555;border-radius:6px;background:#232323;color:#d6d6d6;font-size:12px;line-height:1;opacity:1;touch-action:manipulation;}
+body.rav-monitor-kiosk #ravFullStage #ravMusicianLogout{display:inline-flex;}
+body.rav-monitor-kiosk #ravFullStage .fs-header{flex-wrap:nowrap;flex-shrink:0;overflow:visible;min-height:44px;margin-left:env(safe-area-inset-left,0px);margin-right:env(safe-area-inset-right,0px);}
+body.rav-monitor-kiosk #ravFullStage #ravFsSong{flex:1;min-width:0;}
+body.rav-monitor-kiosk #ravFullStage{padding-top:max(5px,env(safe-area-inset-top,0px))!important;}
 </style>
+<style id="rav-team-chat-style">#ravProfileDialog{position:fixed;inset:0;z-index:2000000;background:#071322ed;display:grid;place-items:center;padding:20px;overflow:auto;}
+#ravProfileDialog[hidden]{display:none;}
+#ravProfileDialog .panel{width:min(460px,100%);margin:0;}
+body.rav-chat-view #ravFullStage{display:none!important;}
+#ravReaderChat{flex:0 0 auto;min-height:44px;white-space:nowrap;}
+.rav-chat-badge{display:inline-block;border-radius:20px;background:#e9b967;color:#142033;font-size:11px;min-width:18px;padding:2px 4px;text-align:center;margin-left:4px;}
+.rav-chat-badge:empty{display:none;}
+.rav-chat-panel{display:flex;flex-direction:column;min-height:360px;}
+.rav-chat-panel .chatlog{height:clamp(220px,48dvh,620px);min-height:180px;overscroll-behavior:contain;}
+.rav-chat-panel .bubble{flex:0 0 auto;white-space:pre-wrap;}
+.rav-chat-panel time{display:block;margin-top:5px;}
+#ravChatCompose{display:flex;align-items:flex-end;gap:8px;margin-top:12px;}
+#ravChatCompose .field{flex:1;margin:0;}
+#chatInput{min-height:64px;max-height:150px;}
+#ravChatStatus{min-height:1.5em;margin:8px 0;}
+.rav-chat-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+@media(max-width:760px){.rav-chat-panel .chatlog{height:45dvh;}.rav-chat-panel{padding:12px;}#ravChatCompose{flex-wrap:wrap;}#ravChatCompose .field{flex-basis:100%;}}
+</style>
+<script id="rav-team-chat">/* RAV: perfil personal y chat compartido. Requiere RAV_Chat_Perfiles.sql. */
+let ravTeamProfile=null;
+(function(){
+ 'use strict';
+ const id=x=>document.getElementById(x),text=(es,en)=>ravRoleText(es,en);
+ let generation=0,profileUser=null,profilePromise=null,profileRequired=false,profileError='',profileSaving=false;
+ let cursor=0;
+ let messages=[],initialized=false,fetching=false,sending=false,draft='',pendingSend=null,lastError='',olderBusy=false,hasOlder=false;
+ let readId=0,chatOwner=null,chatTimer=null,ticking=false;
+ const normalize=v=>String(v||'').trim().replace(/\s+/g,' ');
+ const valid=p=>!!p&&normalize(p.first_name).length>0&&normalize(p.last_name).length>0;
+ const current=uid=>!!session&&session.user.id===uid;
+ const fullName=()=>ravTeamProfile?ravTeamProfile.first_name+' '+ravTeamProfile.last_name:'';
+ const rpc=async(name,body)=>request('/rest/v1/rpc/'+name,'POST',body,await token());
+ const row=result=>Array.isArray(result)?result[0]:result;
+ function ownReadKey(){return 'ravChatRead:'+session.user.id;}
+ function chatVisible(){return !!session&&tab==='chat'&&!document.hidden;}
+ function atBottom(){const el=id('chatlog');return !!el&&el.scrollHeight-el.clientHeight-el.scrollTop<50;}
+ function markRead(){if(!chatVisible()||!messages.length)return;readId=Math.max(readId,...messages.map(m=>Number(m.id)));localStorage.setItem(ownReadKey(),String(readId));badges();}
+ function badges(){
+  const n=messages.filter(m=>Number(m.id)>readId&&m.sender_id!==session?.user?.id).length;
+  document.querySelectorAll('[data-rav-chat-badge]').forEach(el=>{const value=n?String(Math.min(n,99))+(n>99?'+':''):'';if(el.textContent!==value)el.textContent=value;});
+ }
+ function resetChat(){
+  cursor=0;messages=[];initialized=false;fetching=false;sending=false;draft='';pendingSend=null;lastError='';readId=0;chatOwner=null;olderBusy=false;hasOlder=false;
+  clearTimeout(chatTimer);chatTimer=null;ticking=false;badges();
+ }
+ function ensureOwner(){if(!session)return;if(chatOwner!==session.user.id){resetChat();chatOwner=session.user.id;readId=Number(localStorage.getItem(ownReadKey()))||0;}}
+ function errorText(e){
+  if(/42501|authorized|autorizada|permission denied|JWT|expired/i.test(e.message||''))return text('Tu sesión no tiene acceso al chat. Vuelve a iniciar sesión.','Your session cannot access chat. Sign in again.');
+  if(/20 seconds|Espera unos segundos/.test(e.message||''))return text('Espera unos segundos antes de enviar más mensajes.','Wait a few seconds before sending more messages.');
+  return text('No se pudo conectar al chat. Tu mensaje no enviado se conserva; toca Reintentar.','Could not connect to chat. Your unsent message is kept; tap Retry.');
+ }
+ function status(){if(id('ravChatStatus'))id('ravChatStatus').textContent=lastError||(initialized?text('Mensajes compartidos con el equipo.','Messages shared with the team.'):text('Cargando mensajes…','Loading messages…'));}
+ function draw(keepPosition=true,prepend=false){
+  const el=id('chatlog');if(!el||tab!=='chat')return;
+  const bottom=!keepPosition||atBottom(),top=el.scrollTop,height=el.scrollHeight;
+  el.innerHTML=messages.length?messages.map(m=>{
+   const mine=m.sender_id===session?.user?.id;const date=new Date(m.created_at);
+   const time=Number.isNaN(date.getTime())?'':date.toLocaleString(ravPrefs.language==='en'?'en-US':'es-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+   return '<article class="bubble'+(mine?' mine':'')+'" data-message-id="'+esc(m.id)+'" data-user-content><b>'+esc(m.sender_name)+'</b><div>'+esc(m.body)+'</div><time class="small muted" datetime="'+esc(m.created_at)+'">'+esc(time)+'</time></article>';
+  }).join(''):'<div class="empty">'+text('Todavía no hay mensajes. Inicia la conversación.','No messages yet. Start the conversation.')+'</div>';
+  if(prepend)el.scrollTop=top+el.scrollHeight-height;else if(bottom){el.scrollTop=el.scrollHeight;markRead();}else el.scrollTop=top;
+  id('ravChatOlder').hidden=!hasOlder;
+  id('ravChatNew').hidden=bottom||!messages.some(m=>Number(m.id)>readId&&m.sender_id!==session?.user?.id);
+  status();badges();
+ }
+ function merge(rows){const map=new Map(messages.map(m=>[String(m.id),m]));for(const m of rows)map.set(String(m.id),m);messages=[...map.values()].sort((a,b)=>Number(a.id)-Number(b.id));}
+ async function fetchMessages(older=false){
+  if(!session||!valid(ravTeamProfile)||!ravRoleReady)return;
+  ensureOwner();if(fetching||olderBusy)return;
+  const uid=session.user.id,epoch=generation;const first=!initialized;
+  if(older)olderBusy=true;else fetching=true;
+  try{
+   let query='?select=id,sender_id,sender_name,body,created_at&limit=60';
+   if(older&&messages.length)query+='&id=lt.'+messages[0].id+'&order=id.desc';
+   else if(!first)query+='&id=gt.'+cursor+'&order=id.asc';
+   else query+='&order=id.desc';
+   const rows=await db('rav_chat_messages','GET',query);
+   if(epoch!==generation||!current(uid))return;
+   if(!Array.isArray(rows))throw Error('Invalid chat response');
+   if(first||older)hasOlder=rows.length===60;
+   merge(rows);if(!older&&rows.length)cursor=Math.max(cursor,...rows.map(m=>Number(m.id)));initialized=true;lastError='';
+   if(first&&!localStorage.getItem(ownReadKey())){readId=messages.length?Number(messages[messages.length-1].id):0;localStorage.setItem(ownReadKey(),String(readId));}
+   if(rows.length||first)draw(!first,older);else status();badges();
+  }catch(e){if(epoch===generation&&current(uid)){lastError=errorText(e);status();}}
+  finally{if(epoch===generation){fetching=false;olderBusy=false;}}
+ }
+ async function tick(){
+  clearTimeout(chatTimer);chatTimer=null;
+  if(!session||ticking)return;
+  ticking=true;const epoch=generation;
+  try{if(!document.hidden)await fetchMessages();}
+  finally{if(epoch===generation){ticking=false;clearTimeout(chatTimer);if(session)chatTimer=setTimeout(tick,tab==='chat'?2500:15000);}}
+ }
+ async function submitMessage(e){
+  e?.preventDefault();if(sending||!session)return;
+  const input=id('chatInput');if(!input)return;draft=input.value;
+  const sentDraft=draft,body=draft.trim();if(!body)return;
+  if(body.length>2000){lastError=text('El mensaje puede tener hasta 2000 caracteres.','Messages can contain up to 2000 characters.');status();return;}
+  if(!valid(ravTeamProfile)){void ensureProfile();return;}
+  if(!pendingSend||pendingSend.body!==body)pendingSend={body,id:crypto.randomUUID()};
+  const pending=pendingSend,uid=session.user.id,epoch=generation; sending=true;id('sendChat').disabled=true;lastError='';status();
+  try{
+   const message=row(await rpc('rav_send_chat_message',{p_body:body,p_client_id:pending.id}));
+   if(epoch!==generation||!current(uid))return;
+   if(!message?.id)throw Error('Message was not confirmed');
+   merge([message]);pendingSend=null;
+   if(input.value===sentDraft){input.value='';draft='';}else draft=input.value;
+   draw(false);
+  }catch(e){if(epoch===generation&&current(uid)){lastError=errorText(e);status();}}
+  finally{if(epoch===generation){sending=false;if(id('sendChat'))id('sendChat').disabled=false;}}
+ }
+ function profileDialog(required,error=''){
+  profileRequired=required;profileError=error;
+  let dialog=id('ravProfileDialog');
+  if(!dialog){dialog=document.createElement('div');dialog.id='ravProfileDialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','ravProfileTitle');document.body.appendChild(dialog);}
+  const metadata=session?.user?.user_metadata||{},p=ravTeamProfile||metadata;
+  dialog.hidden=false;
+  dialog.innerHTML='<form class="panel" id="ravProfileForm"><h2 id="ravProfileTitle">'+text('Tu nombre en RAV','Your name in RAV')+'</h2><p class="muted">'+text('Escribe tu nombre y apellido. Así aparecerás en el chat del equipo.','Enter your first and last name. This is how you will appear in team chat.')+'</p><div class="field"><label for="ravFirstName">'+text('Nombre','First name')+'</label><input id="ravFirstName" autocomplete="given-name" maxlength="60" required value="'+esc(p.first_name||'')+'"></div><div class="field"><label for="ravLastName">'+text('Apellido','Last name')+'</label><input id="ravLastName" autocomplete="family-name" maxlength="60" required value="'+esc(p.last_name||'')+'"></div><p id="ravProfileStatus" role="status" class="warning">'+esc(error)+'</p><div class="actions"><button class="btn" id="ravProfileSave" type="submit">'+text('Guardar nombre','Save name')+'</button><button class="btn secondary" id="ravProfileCancel" type="button">'+(required?text('Cerrar sesión','Sign out'):text('Cancelar','Cancel'))+'</button></div></form>';
+  id('ravProfileForm').onsubmit=saveProfile;
+  id('ravProfileCancel').onclick=()=>{if(profileRequired)void ravLogoutSafe();else dialog.hidden=true;};
+  id('ravFirstName').focus();
+ }
+ async function saveProfile(e){
+  e.preventDefault();if(profileSaving||!session)return;
+  const first=normalize(id('ravFirstName').value),last=normalize(id('ravLastName').value);
+  if(!first||!last||first.length>60||last.length>60){id('ravProfileStatus').textContent=text('Completa nombre y apellido.','Enter first and last name.');return;}
+  profileSaving=true;id('ravProfileSave').disabled=true;
+  const uid=session.user.id,epoch=generation;
+  try{
+   const p=row(await rpc('rav_save_team_profile',{p_first_name:first,p_last_name:last}));
+   if(epoch!==generation||!current(uid))return;
+   if(!valid(p))throw Error('Profile not confirmed');
+   ravTeamProfile=p;profileUser=uid;profileError='';id('ravProfileDialog').hidden=true;
+   const required=profileRequired;profileRequired=false;
+   if(required)await initializeRoles();else if(tab==='chat')render();
+  }catch(e){if(epoch===generation&&current(uid))id('ravProfileStatus').textContent=text('No se pudo guardar tu nombre. Inténtalo de nuevo o consulta al administrador.','Could not save your name. Try again or contact the administrator.');}
+  finally{if(epoch===generation){profileSaving=false;if(id('ravProfileSave'))id('ravProfileSave').disabled=false;}}
+ }
+ async function ensureProfile(){
+  if(!session)return false;const uid=session.user.id;
+  if(profileUser===uid&&valid(ravTeamProfile))return true;
+  if(profilePromise)return profilePromise;
+  const epoch=generation;
+  profilePromise=(async()=>{
+   try{
+    const rows=await db('rav_team_profiles','GET','?select=user_id,first_name,last_name&user_id=eq.'+encodeURIComponent(uid)+'&limit=1');
+    if(epoch!==generation||!current(uid))return false;
+    ravTeamProfile=rows?.[0]||null;profileUser=uid;
+    if(valid(ravTeamProfile))return true;
+    profileDialog(true);return false;
+   }catch(e){if(epoch===generation&&current(uid))profileDialog(true,text('No se pudo cargar tu perfil. Consulta al administrador para habilitarlo.','Could not load your profile. Contact the administrator to enable it.'));return false;}
+  })();
+  try{return await profilePromise;}finally{if(epoch===generation)profilePromise=null;}
+ }
+ const originalInitRoles=ravInitRoles;
+ async function initializeRoles(){const uid=session?.user?.id;if(!uid)return;await originalInitRoles();if(!current(uid))return;ensureOwner();void tick();}
+ ravInitRoles=async function(){ravRoleReady=false;if(await ensureProfile())await initializeRoles();};
+ const oldLogout=logout;
+ logout=function(){generation++;ravTeamProfile=null;profileUser=null;profilePromise=null;profileSaving=false;profileRequired=false;resetChat();id('ravProfileDialog')?.setAttribute('hidden','');document.body.classList.remove('rav-chat-view');return oldLogout.apply(this,arguments);};
+ renderChat=function(){
+  return '<section class="panel rav-chat-panel"><div class="row"><h2>'+text('Chat de RAV','RAV team chat')+'</h2><button class="btn secondary sm" id="ravChatBack">'+text('Volver al setlist','Back to setlist')+'</button></div><div class="rav-chat-meta"><span data-user-content>'+esc(fullName())+'</span><button class="btn outline sm" id="ravChatProfile">'+text('Editar mi nombre','Edit my name')+'</button></div><p class="small muted" id="ravChatStatus" role="status"></p><div class="actions"><button class="btn secondary sm" id="ravChatOlder" hidden>'+text('Ver mensajes anteriores','Load older messages')+'</button><button class="btn outline sm" id="ravChatRetry">'+text('Reintentar','Retry')+'</button><button class="btn secondary sm" id="ravChatNew" hidden>'+text('Ver mensajes nuevos','View new messages')+'</button></div><div class="chatlog" id="chatlog" aria-label="'+text('Mensajes del equipo','Team messages')+'"></div><form id="ravChatCompose"><div class="field"><label for="chatInput">'+text('Mensaje','Message')+'</label><textarea id="chatInput" maxlength="2000" required placeholder="'+text('Escribe un mensaje…','Write a message…')+'">'+esc(draft)+'</textarea></div><button class="btn" id="sendChat" type="submit" '+(sending?'disabled':'')+'>'+text('Enviar','Send')+'</button></form></section>';
+ };
+ window.ravBindChatPage=function(){
+  ensureOwner();id('ravChatCompose').onsubmit=submitMessage;
+  id('chatInput').oninput=e=>{draft=e.target.value;};
+  id('chatInput').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();void submitMessage();}};
+  id('ravChatBack').onclick=()=>switchTab('stage');
+  id('ravChatProfile').onclick=()=>profileDialog(false);
+  id('ravChatRetry').onclick=()=>{void fetchMessages();};id('ravChatOlder').onclick=()=>{void fetchMessages(true);};
+  id('ravChatNew').onclick=()=>{const el=id('chatlog');el.scrollTop=el.scrollHeight;markRead();id('ravChatNew').hidden=true;};
+  id('chatlog').addEventListener('scroll',()=>{if(atBottom()){markRead();id('ravChatNew').hidden=true;}},{passive:true});
+  draw(false);void tick();
+ };
+ const oldRender=render;
+ render=function(){
+  const input=id('chatInput'),focused=document.activeElement===input,start=input?.selectionStart,end=input?.selectionEnd;
+  if(input)draft=input.value;
+  document.body.classList.toggle('rav-chat-view',!!session&&tab==='chat');
+  const result=oldRender.apply(this,arguments);
+  document.body.classList.toggle('rav-chat-view',!!session&&tab==='chat');
+  if(focused&&id('chatInput')){id('chatInput').focus();id('chatInput').setSelectionRange(start,end);}
+  badges();return result;
+ };
+ const header=id('ravFullStage')?.querySelector('.fs-header');
+ if(header){const b=document.createElement('button');b.id='ravReaderChat';b.type='button';b.className='btn secondary sm';b.innerHTML='Chat <span class="rav-chat-badge" data-rav-chat-badge></span>';b.onclick=()=>switchTab('chat');header.insertBefore(b,id('ravMusicianScrollToggle'));}
+ document.querySelectorAll('[data-tab="chat"]').forEach(b=>{const span=document.createElement('span');span.className='rav-chat-badge';span.setAttribute('data-rav-chat-badge','');b.appendChild(span);});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&session){if(chatVisible()&&atBottom())markRead();void tick();}});
+ window.addEventListener('online',()=>{if(session)void tick();});
+ // Support a session restored before this final module ran.
+ if(session)void ravInitRoles();
+})();
+</script>
+</body></html>
+
